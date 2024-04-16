@@ -16,12 +16,12 @@ import ru.practicum.shareit.user.exception.UserNotFoundException;
 @RestControllerAdvice(basePackages = "ru.practicum.shareit")
 @Slf4j
 public class CommonControllerAdvice {
-    private final String CLASS_NAME = this.getClass().getName();
+    private final String className = this.getClass().getName();
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRunTimeException(final RuntimeException exception) {
-        log.info(CLASS_NAME + "- handleRunTimeException()");
+        log.info(className + "- handleRunTimeException()");
         log.warn(exception.getClass().toString());
 
         return new ErrorResponse("RuntimeException",
@@ -32,7 +32,7 @@ public class CommonControllerAdvice {
     @ExceptionHandler(MethodNotImplemented.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodNotImplemented(final MethodNotImplemented exception) {
-        log.info(CLASS_NAME + "handleMethodNotImplemented");
+        log.info(className + "handleMethodNotImplemented");
 
         return new ErrorResponse("Ошибка выполнения запроса",
                 "Проблемы реализацией endpoint, ", exception.getMessage());
@@ -42,7 +42,7 @@ public class CommonControllerAdvice {
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFoundException(final UserNotFoundException exception) {
-        log.info(CLASS_NAME + "UserNotFoundException");
+        log.info(className + "UserNotFoundException");
 
         return new ErrorResponse("Ошибка существования пользователя",
                 "Пользователь с указанным идентификатором отсутствует",
@@ -52,7 +52,7 @@ public class CommonControllerAdvice {
     @ExceptionHandler(ItemNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleItemNotFoundException(final ItemNotFoundException exception) {
-        log.info(CLASS_NAME + "handleItemNotFoundException");
+        log.info(className + "handleItemNotFoundException");
         return new ErrorResponse("Ошибка существования предмета",
                 "Предмет с указанным идентификатором отсутствует",
                 exception.getMessage());
@@ -61,7 +61,7 @@ public class CommonControllerAdvice {
     @ExceptionHandler(SameUserEmailException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleSameUserEmailException(final SameUserEmailException exception) {
-        log.info(CLASS_NAME + "handleSameUserEmailException");
+        log.info(className + "handleSameUserEmailException");
 
         return new ErrorResponse("Ошибка дублирования пользователя",
                 "Пользователь с указанным email уже существует",
@@ -71,7 +71,7 @@ public class CommonControllerAdvice {
     @ExceptionHandler(ItemOwnerIncorrectException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleItemOwnerIncorrectException(final ItemOwnerIncorrectException exception) {
-        log.info(CLASS_NAME + "handleItemOwnerIncorrectException");
+        log.info(className + "handleItemOwnerIncorrectException");
 
         return new ErrorResponse("Ошибка владельца предмета",
                 "Предмет с указанным владельцем отсутствует",
