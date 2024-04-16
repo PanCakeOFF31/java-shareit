@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final String NO_FOUND_USER = "Такого пользователя с id: %d не существует в хранилище";
+    private final static String NO_FOUND_USER = "Такого пользователя с id: %d не существует в хранилище";
 
     @Override
     public User createUser(final User user) {

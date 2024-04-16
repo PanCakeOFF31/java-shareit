@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
-    private final String NO_FOUND_ITEM = "Такого предмета с id: %d не существует в хранилище";
-    private final String INCORRECT_OWNER = "Пользователь с id: %d не является владельцем предмета с id: %d ";
+    private final static String NO_FOUND_ITEM = "Такого предмета с id: %d не существует в хранилище";
+    private final static String INCORRECT_OWNER = "Пользователь с id: %d не является владельцем предмета с id: %d ";
 
     @Override
     public Item createItem(Item item, long userId) {
@@ -57,14 +57,11 @@ public class ItemServiceImpl implements ItemService {
             return gettedItem;
         }
 
-        if (providedName != null)
-            gettedItem.setName(providedName);
+        if (providedName != null) gettedItem.setName(providedName);
 
-        if (providedDescription != null)
-            gettedItem.setDescription(providedDescription);
+        if (providedDescription != null) gettedItem.setDescription(providedDescription);
 
-        if (providedAvailable != null)
-            gettedItem.setAvailable(providedAvailable);
+        if (providedAvailable != null) gettedItem.setAvailable(providedAvailable);
 
         return itemRepository.updateItem(gettedItem);
     }
@@ -84,32 +81,24 @@ public class ItemServiceImpl implements ItemService {
         log.info("ItemServiceImpl - service.getItemsByUser({})", userId);
 
         userService.userIsExist(userId);
-        return itemRepository.findItemsByUser(userId).stream()
-                .map(ItemMapper::tiItemDto)
-                .collect(Collectors.toList());
+        return itemRepository.findItemsByUser(userId).stream().map(ItemMapper::tiItemDto).collect(Collectors.toList());
     }
 
     @Override
     public List<ItemDto> searchItems(long userId, String text) {
         log.info("ItemServiceImpl - service.searchItems({}, {})", userId, text);
 
-        if (text.isBlank())
-            return List.of();
+        if (text.isBlank()) return List.of();
 
         userService.userIsExist(userId);
-        return itemRepository.searchItems(userId, text.trim().toLowerCase())
-                .stream()
-                .map(ItemMapper::tiItemDto)
-                .collect(Collectors.toList());
+        return itemRepository.searchItems(userId, text.trim().toLowerCase()).stream().map(ItemMapper::tiItemDto).collect(Collectors.toList());
     }
 
     @Override
     public List<ItemDto> getAll() {
         log.info("ItemServiceImpl - service.getAll()");
 
-        return itemRepository.getAll().stream()
-                .map(ItemMapper::tiItemDto)
-                .collect(Collectors.toList());
+        return itemRepository.getAll().stream().map(ItemMapper::tiItemDto).collect(Collectors.toList());
     }
 
     @Override
