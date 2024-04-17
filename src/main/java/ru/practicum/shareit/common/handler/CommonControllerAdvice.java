@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.common.error.ErrorResponse;
 import ru.practicum.shareit.common.exception.MethodNotImplemented;
+import ru.practicum.shareit.item.exception.ItemFieldValidationException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemOwnerIncorrectException;
 import ru.practicum.shareit.user.exception.SameUserEmailException;
+import ru.practicum.shareit.user.exception.UserFieldValidationException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 @RestControllerAdvice(basePackages = "ru.practicum.shareit")
@@ -75,6 +77,26 @@ public class CommonControllerAdvice {
 
         return new ErrorResponse("Ошибка владельца предмета",
                 "Предмет с указанным владельцем отсутствует",
+                exception.getMessage());
+    }
+
+    @ExceptionHandler(UserFieldValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUserFieldValidationException(final UserFieldValidationException exception) {
+        log.info(className + "handleUserFieldValidationException");
+
+        return new ErrorResponse("Ошибка валидация полей пользователя",
+                "В JSON объекте отсутствуют необходимые поля",
+                exception.getMessage());
+    }
+
+    @ExceptionHandler(ItemFieldValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleItemFieldValidationException(final ItemFieldValidationException exception) {
+        log.info(className + "handleItemFieldValidationException");
+
+        return new ErrorResponse("Ошибка валидация полей предмета",
+                "В JSON объекте отсутствуют необходимые поля",
                 exception.getMessage());
     }
 }

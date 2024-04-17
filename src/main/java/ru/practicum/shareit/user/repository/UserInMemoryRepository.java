@@ -29,11 +29,7 @@ public class UserInMemoryRepository implements UserRepository {
         log.info("UserInMemoryRepository - service.deleteUserById({})", userId);
 
         User deletedUser = users.remove(userId);
-
-        if (deletedUser == null)
-            return Optional.empty();
-
-        return Optional.of(deletedUser);
+        return Optional.ofNullable(deletedUser);
     }
 
     @Override

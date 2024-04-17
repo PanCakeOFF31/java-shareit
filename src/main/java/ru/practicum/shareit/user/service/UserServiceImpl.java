@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.exception.SameUserEmailException;
+import ru.practicum.shareit.user.exception.UserFieldValidationException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,15 +22,18 @@ public class UserServiceImpl implements UserService {
     private static final String NO_FOUND_USER = "Такого пользователя с id: %d не существует в хранилище";
 
     @Override
-    public User createUser(final User user) {
-        log.info("UserServiceImpl - service.createUser({})", user);
+    public UserDto createUser(final UserDto userDto) {
+        log.info("UserServiceImpl - service.createUser({})", userDto);
 
+        final User user = UserMapper.toUser(userDto);
+
+        emptyFieldValidation(user);
         emailValidation(user);
 
         long assignedId = userRepository.addUser(user);
         user.setId(assignedId);
 
-        return user;
+        return UserMapper.toUserDto(user);
     }
 
     @Override
@@ -40,36 +45,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(final long userId, final UserDto user) {
-        log.info("UserServiceImpl - service.updateUser({}, {})", userId, user);
+    public UserDto updateUser(final UserDto userDto, final long userId) {
+        log.info("UserServiceImpl - service.updateUser({}, {})", userId, userDto);
 
-        User providedUser = UserMapper.toUser(userId, user);
-        User gettedUser = getUserById(userId);
+        final User gotUser = getUserById(userId);
 
-        String providedName = providedUser.getName();
-        String providedEmail = providedUser.getEmail();
+        final String providedName = userDto.getName();
+        final String providedEmail = userDto.getEmail();
 
         if (providedName == null && providedEmail == null)
-            return gettedUser;
+            return UserMapper.toUserDto(gotUser);
 
         if (providedName != null)
-            gettedUser.setName(providedName);
+            gotUser.setName(providedName);
 
         if (providedEmail != null) {
-            if (!providedEmail.equals(gettedUser.getEmail())) {
-                emailValidation(providedUser);
+            if (!providedEmail.equals(gotUser.getEmail())) {
+                emailValidation(userDto);
             }
 
-            gettedUser.setEmail(providedEmail);
+            gotUser.setEmail(providedEmail);
         }
 
-        return userRepository.updateUser(gettedUser);
+        return UserMapper.toUserDto(userRepository.updateUser(gotUser));
     }
 
     @Override
-    public List<User> getAll() {
+    public List<UserDto> getAll() {
         log.info("UserServiceImpl - service.getAll()");
-        return userRepository.getAll();
+        return userRepository.getAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDto getUserDtoById(long userId) {
+        log.info("UserServiceImpl - service.getUserDtoById({})", userId);
+        return UserMapper.toUserDto(getUserById(userId));
     }
 
     @Override
@@ -77,7 +89,9 @@ public class UserServiceImpl implements UserService {
         log.info("UserServiceImpl - service.getUserById({})", userId);
 
         String message = String.format(NO_FOUND_USER, userId);
-        return userRepository.findUserById(userId).orElseThrow(() -> new UserNotFoundException(message));
+        return userRepository
+                .findUserById(userId)
+                .orElseThrow(() -> new UserNotFoundException(message));
     }
 
     @Override
@@ -104,6 +118,24 @@ public class UserServiceImpl implements UserService {
             String message = "Пользователь с таким email уже существует - " + user.getEmail();
             log.warn(message);
             throw new SameUserEmailException(message);
+        }
+    }
+
+    private void emailValidation(final UserDto user) {
+        emailValidation(UserMapper.toUser(user));
+    }
+
+    private void emptyFieldValidation(final User user) {
+        log.info("UserServiceImpl - service.emptyFieldValidation({})", user);
+
+        String name = user.getName();
+        String email = user.getEmail();
+
+        if (name == null || email == null
+                || name.isBlank() || email.isBlank()) {
+            String message = "Отсутствует часть обязательны полей name/email - " + user;
+            log.warn(message);
+            throw new UserFieldValidationException(message);
         }
     }
 }

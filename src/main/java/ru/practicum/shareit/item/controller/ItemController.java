@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -20,25 +19,25 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Item createItem(@Valid @RequestBody final Item item,
-                           @RequestHeader("X-Sharer-User-Id") final long userId) {
+    public ItemDto createItem(@Valid @RequestBody final ItemDto item,
+                              @RequestHeader("X-Sharer-User-Id") final long userId) {
         log.info("/items - POST: createItem({}, {})", item, userId);
         return itemService.createItem(item, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public Item updateItem(@Valid @RequestBody final ItemDto item,
-                           @RequestHeader("X-Sharer-User-Id") final long userId,
-                           @PathVariable final long itemId) {
+    public ItemDto updateItem(@Valid @RequestBody final ItemDto item,
+                              @RequestHeader("X-Sharer-User-Id") final long userId,
+                              @PathVariable final long itemId) {
         log.info("/items/{} - PATCH: updateItem({}, {}, {})", itemId, item, userId, itemId);
         return itemService.updateItem(item, userId, itemId);
     }
 
     @GetMapping("/{itemId}")
-    public Item getItem(@RequestHeader("X-Sharer-User-Id") final long userId,
-                        @PathVariable final long itemId) {
+    public ItemDto getItem(@RequestHeader("X-Sharer-User-Id") final long userId,
+                           @PathVariable final long itemId) {
         log.info("/items/{} - GET: getItem({}, {})", itemId, userId, itemId);
-        return itemService.getItem(userId, itemId);
+        return itemService.getItemDto(userId, itemId);
     }
 
     @GetMapping

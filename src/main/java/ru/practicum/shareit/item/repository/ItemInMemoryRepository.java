@@ -40,9 +40,12 @@ public class ItemInMemoryRepository implements ItemRepository {
 
         Item item = items.get(itemId);
 
-        if (item == null)
+        if (item == null) {
+            log.info("Предмет с id: {} не нашелся в репозитории", itemId);
             return Optional.empty();
+        }
 
+        log.info("Предмет с id: {} найден в репозитории", itemId);
         return Optional.of(new Item(item));
     }
 
