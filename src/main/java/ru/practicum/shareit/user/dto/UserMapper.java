@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.dto;
 import ru.practicum.shareit.user.model.User;
 
 public class UserMapper {
-    public static UserDto toUserDto(final User user) {
+    public static UserDto mapToUserDto(final User user) {
         return UserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -11,11 +11,19 @@ public class UserMapper {
                 .build();
     }
 
-    public static User toUser(final UserDto userDto) {
+    public static User mapToUser(final UserDto userDto) {
         return User.builder()
                 .id(userDto.getId())
                 .name(userDto.getName())
                 .email(userDto.getEmail())
                 .build();
     }
+
+    public static UserBookingDto mapToUserBookingDto(final User user) {
+        return UserBookingDto.builder()
+                .id(user.getId())
+                .build();
+    }
+
+
 }

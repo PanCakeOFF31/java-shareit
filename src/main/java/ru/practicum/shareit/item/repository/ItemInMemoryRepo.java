@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
-public class ItemInMemoryRepository implements ItemRepository {
+public class ItemInMemoryRepo implements ItemRepo {
     private final Map<Long, Item> items = new HashMap<>(128);
     private long generatedId = 0;
 
@@ -54,7 +55,7 @@ public class ItemInMemoryRepository implements ItemRepository {
         log.info("ItemInMemoryRepository - service.findItemsByUser({})", userId);
 
         return items.values().stream()
-                .filter(item -> item.getOwner() == userId)
+                .filter(item -> item.getOwner().getId() == userId)
                 .collect(Collectors.toList());
     }
 
@@ -76,12 +77,18 @@ public class ItemInMemoryRepository implements ItemRepository {
     }
 
     @Override
-    public List<Item> getAll() {
+    public List<Item> getAllItems() {
         log.info("ItemInMemoryRepository - service.getAll()");
         return new ArrayList<>(items.values());
+    }
+
+    @Override
+    public List<Comment> getAllComments() {
+        return null;
     }
 
     private long generateId() {
         return ++generatedId;
     }
+
 }

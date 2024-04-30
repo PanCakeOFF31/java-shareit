@@ -1,22 +1,24 @@
 package ru.practicum.shareit.user.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import ru.practicum.shareit.user.dto.UserBookingDto;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository {
-    long addUser(final User user);
+public interface UserRepository extends JpaRepository<User, Long> {
+    @Query("select new ru.practicum.shareit.user.dto.UserDto(u.id, u.name, u.email) " +
+            "from User as u " +
+            "where u.id = :id")
+    Optional<UserDto> findUserDtoById(@Param("id") final long userId);
 
-    User updateUser(final User user);
+    @Query("select new ru.practicum.shareit.user.dto.UserBookingDto(u.id) " +
+            "from User as u " +
+            "where u.id = :id")
+    Optional<UserBookingDto> findUserBookingDtoById(@Param("id") final long userId);
 
-    Optional<User> findUserById(final long userId);
-
-    boolean contains(final long userId);
-
-    Optional<User> deleteUserById(final long userId);
-
-    boolean containsEmail(final String email);
-
-    List<User> getAll();
+    Optional<User> findUserByEmail(final String email);
 }
