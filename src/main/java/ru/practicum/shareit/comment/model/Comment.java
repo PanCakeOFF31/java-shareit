@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comment", schema = "public")
+@Table(name = "comment")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

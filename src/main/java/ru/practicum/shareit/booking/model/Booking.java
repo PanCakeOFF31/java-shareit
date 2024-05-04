@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "booking", schema = "public")
+@Table(name = "booking")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

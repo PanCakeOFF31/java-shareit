@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "item", schema = "public")
+@Table(name = "item")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
