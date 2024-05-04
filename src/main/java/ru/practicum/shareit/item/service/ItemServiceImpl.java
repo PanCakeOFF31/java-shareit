@@ -94,10 +94,9 @@ public class ItemServiceImpl implements ItemService {
 
     public BookingItemOrderDto findNearLastBookingIdByItem(final long itemId) {
         Optional<BookingItemOrderDto> bookingItem = itemRepository
-                .findTopByItemIdAndEndLessThanEqualOrderByEndDesc(itemId,
-                        LocalDateTime.now(),
-                        Pageable.ofSize(1)).
-                stream().findFirst();
+                .findTopByItemIdAndEndLessThanEqualOrderByEndDesc(
+                        itemId, LocalDateTime.now(), Pageable.ofSize(1)).stream()
+                .findFirst();
 
         return bookingItem.orElse(null);
 
@@ -105,21 +104,21 @@ public class ItemServiceImpl implements ItemService {
 
     public BookingItemOrderDto findNearOnlyLastBookingIdByItem(final long itemId) {
         Optional<BookingItemOrderDto> bookingItem = itemRepository
-                .findTop1ByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc(itemId,
-                        LocalDateTime.now(),
-                        Pageable.ofSize(1)).
-                stream().findFirst();
+                .findTop1ByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc(
+                        itemId, LocalDateTime.now(), Pageable.ofSize(1)).stream()
+                .findFirst();
 
         return bookingItem.orElse(null);
     }
 
     public BookingItemOrderDto findNearNextBookingIdByItem(long itemId) {
         Optional<BookingItemOrderDto> bookingItem = itemRepository
-                .findTop1ByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc(itemId,
+                .findTop1ByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc(
+                        itemId,
                         LocalDateTime.now(),
                         List.of(Status.WAITING, Status.APPROVED),
-                        Pageable.ofSize(1)).
-                stream().findFirst();
+                        Pageable.ofSize(1)).stream().
+                findFirst();
 
         return bookingItem.orElse(null);
     }
