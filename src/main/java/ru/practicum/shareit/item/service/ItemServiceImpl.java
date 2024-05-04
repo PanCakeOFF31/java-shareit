@@ -117,8 +117,8 @@ public class ItemServiceImpl implements ItemService {
                         itemId,
                         LocalDateTime.now(),
                         List.of(Status.WAITING, Status.APPROVED),
-                        Pageable.ofSize(1)).stream().
-                findFirst();
+                        Pageable.ofSize(1)).stream()
+                        .findFirst();
 
         return bookingItem.orElse(null);
     }
