@@ -35,8 +35,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "LEFT JOIN FETCH Item as it ON b.item.id = it.id " +
             "WHERE b.item.id = :item_id AND b.end <= :now_time " +
             "ORDER BY b.end DESC ")
-    List<BookingItemOrderDto> findTopByItemIdAndEndLessThanEqualOrderByEndDesc
-    (@Param("item_id") final long itemId, @Param("now_time") final LocalDateTime ldt, Pageable pageable);
+    List<BookingItemOrderDto> findTopByItemIdAndEndLessThanEqualOrderByEndDesc(
+            @Param("item_id") final long itemId, @Param("now_time") final LocalDateTime ldt, Pageable pageable);
 
     //    Only-Last
     @Query("SELECT new ru.practicum.shareit.booking.dto.BookingItemOrderDto(b.id as id, u.id as bookerId)  " +
@@ -46,8 +46,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "WHERE b.item.id = :item_id " +
             "AND b.start <= :now_time AND b.end >= :now_time " +
             "ORDER BY b.end DESC ")
-    List<BookingItemOrderDto> findTop1ByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc
-    (@Param("item_id") final long itemId, @Param("now_time") final LocalDateTime ldt1, Pageable pageable);
+    List<BookingItemOrderDto> findTop1ByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc(
+            @Param("item_id") final long itemId, @Param("now_time") final LocalDateTime ldt1, Pageable pageable);
 
     //    Next
     @Query("SELECT new ru.practicum.shareit.booking.dto.BookingItemOrderDto(b.id as id, u.id as bookerId)  " +
@@ -57,8 +57,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "WHERE b.item.id = :item_id " +
             "AND b.start >= :now_time AND b.status IN (:statuses)" +
             "ORDER BY b.start ASC ")
-    List<BookingItemOrderDto> findTop1ByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc
-    (@Param("item_id") final long itemId, @Param("now_time") final LocalDateTime ldt,
-     Collection<Status> statuses, Pageable pageable);
+    List<BookingItemOrderDto> findTop1ByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc(
+            @Param("item_id") final long itemId, @Param("now_time") final LocalDateTime ldt,
+            Collection<Status> statuses, Pageable pageable);
 
 }

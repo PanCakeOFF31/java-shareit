@@ -33,58 +33,58 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
 
     // State.Past
-    List<Booking> findByBookerIdAndEndLessThanOrderByStartDesc
-    (final long bookerId, final LocalDateTime currentDateTime, final Pageable pageable);
+    List<Booking> findByBookerIdAndEndLessThanOrderByStartDesc(
+            final long bookerId, final LocalDateTime currentDateTime, final Pageable pageable);
 
     // State.Current
-    List<Booking> findByBookerIdAndStartLessThanEqualAndEndGreaterThanOrderByStartDesc
-    (final long bookerId, final LocalDateTime currentDateTime1, final LocalDateTime currentDateTime2, final Pageable pageable);
+    List<Booking> findByBookerIdAndStartLessThanEqualAndEndGreaterThanOrderByStartDesc(
+            final long bookerId, final LocalDateTime currentDateTime1, final LocalDateTime currentDateTime2, final Pageable pageable);
 
     // State.   Future
-    List<Booking> findByBookerIdAndStartGreaterThanEqualOrderByStartDesc
-    (final long bookerId, final LocalDateTime currentDateTime, final Pageable pageable);
+    List<Booking> findByBookerIdAndStartGreaterThanEqualOrderByStartDesc(
+            final long bookerId, final LocalDateTime currentDateTime, final Pageable pageable);
 
     // State.Status
-    List<Booking> findByBookerIdAndStatusOrderByStartDesc
-    (final long bookerId, final Status status, final Pageable pageable);
+    List<Booking> findByBookerIdAndStatusOrderByStartDesc(
+            final long bookerId, final Status status, final Pageable pageable);
 
     // State.All
-    List<Booking> findByBookerIdOrderByStartDesc
-    (final long bookerId, Pageable pageable);
+    List<Booking> findByBookerIdOrderByStartDesc(
+            final long bookerId, Pageable pageable);
 
 
     //  State.Past
-    List<Booking> findByItemOwnerIdAndEndLessThanOrderByStartDesc
-    (final long bookerId, final LocalDateTime currentDateTime, final Pageable pageable);
+    List<Booking> findByItemOwnerIdAndEndLessThanOrderByStartDesc(
+            final long bookerId, final LocalDateTime currentDateTime, final Pageable pageable);
 
     //  State.Current
-    List<Booking> findByItemOwnerIdAndStartLessThanEqualAndEndGreaterThanOrderByStartDesc
-    (final long bookerId, final LocalDateTime currentDateTime1, final LocalDateTime currentDateTime2, final Pageable pageable);
+    List<Booking> findByItemOwnerIdAndStartLessThanEqualAndEndGreaterThanOrderByStartDesc(
+            final long bookerId, final LocalDateTime currentDateTime1, final LocalDateTime currentDateTime2, final Pageable pageable);
 
     //  State.Future
-    List<Booking> findByItemOwnerIdAndStartGreaterThanEqualOrderByStartDesc
-    (final long bookerId, final LocalDateTime currentDateTime, final Pageable pageable);
+    List<Booking> findByItemOwnerIdAndStartGreaterThanEqualOrderByStartDesc(
+            final long bookerId, final LocalDateTime currentDateTime, final Pageable pageable);
 
     //  State.Status
-    List<Booking> findByItemOwnerIdAndStatusOrderByStartDesc
-    (final long bookerId, final Status status, final Pageable pageable);
+    List<Booking> findByItemOwnerIdAndStatusOrderByStartDesc(
+            final long bookerId, final Status status, final Pageable pageable);
 
     //  State.All
-    List<Booking> findByItemOwnerIdOrderByStartDesc
-    (final long ownerId, final Pageable pageable);
+    List<Booking> findByItemOwnerIdOrderByStartDesc(
+            final long ownerId, final Pageable pageable);
 
     //    Last
-    Optional<Booking> findTop1ByItemIdAndEndLessThanEqualOrderByEndDesc
-    (final long itemId, final LocalDateTime currentDateTime);
+    Optional<Booking> findTop1ByItemIdAndEndLessThanEqualOrderByEndDesc(
+            final long itemId, final LocalDateTime currentDateTime);
 
     //    Only-Last
-    Optional<Booking> findTop1ByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc
-    (final long itemId, final LocalDateTime ldt1, final LocalDateTime ldt2);
+    Optional<Booking> findTop1ByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc(
+            final long itemId, final LocalDateTime ldt1, final LocalDateTime ldt2);
 
     //    Next
-    Optional<Booking> findTop1ByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc
-    (final long itemId, final LocalDateTime currentDateTime, Collection<Status> statuses);
+    Optional<Booking> findTop1ByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc(
+            final long itemId, final LocalDateTime currentDateTime, Collection<Status> statuses);
 
-    boolean existsBookingByItemIdAndBookerIdAndStatusIsNotAndEndLessThan
-            (final long itemId, final long bookerId, final Status status, final LocalDateTime ldc);
+    boolean existsBookingByItemIdAndBookerIdAndStatusIsNotAndEndLessThan(
+            final long itemId, final long bookerId, final Status status, final LocalDateTime ldc);
 }

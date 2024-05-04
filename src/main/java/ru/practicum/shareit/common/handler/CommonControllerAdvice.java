@@ -131,12 +131,6 @@ public class CommonControllerAdvice {
                 exception.getMessage());
     }
 
-//    class javax.validation.ConstraintViolationException - нарушения целостности БД
-//    class org.springframework.dao.DataIntegrityViolationException -
-//    BookingFieldValidation
-//    Booking ItemUnavailable
-//    BookingNotound
-
     @ExceptionHandler(BookingItemUnavailableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBookingItemUnavailableException(final BookingItemUnavailableException exception) {
