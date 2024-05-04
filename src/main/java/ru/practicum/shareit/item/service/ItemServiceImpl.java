@@ -118,7 +118,7 @@ public class ItemServiceImpl implements ItemService {
                         LocalDateTime.now(),
                         List.of(Status.WAITING, Status.APPROVED),
                         Pageable.ofSize(1)).stream()
-                        .findFirst();
+                .findFirst();
 
         return bookingItem.orElse(null);
     }
@@ -242,11 +242,7 @@ public class ItemServiceImpl implements ItemService {
         final Item item = getItemById(itemId);
         final User user = userService.getUserById(userId);
 
-//        TODO: вынести в отдельный метод
-//        Проверка на то, что пользователь когда-либо бронировал данную вещь
-        if (!bookingRepository.existsBookingByItemIdAndBookerIdAndStatusIsNotAndEndLessThan
-                (itemId, userId, Status.REJECTED, LocalDateTime.now()))
-            throw new UserNotBookedItemException();
+        userBookedItem(itemId, userId);
 
         final Comment comment = CommentMapper.mapToComment(commentRequestDto);
 
@@ -257,6 +253,12 @@ public class ItemServiceImpl implements ItemService {
         final Comment saveComment = commentRepository.save(comment);
 
         return CommentMapper.mapToCommentResponseDto(saveComment);
+    }
+
+    private void userBookedItem(final long itemId, final long bookerId) {
+        if (!bookingRepository.existsBookingByItemIdAndBookerIdAndStatusIsNotAndEndLessThan(
+                itemId, bookerId, Status.REJECTED, LocalDateTime.now()))
+            throw new UserNotBookedItemException();
     }
 
     private void emptyFieldValidation(final Item item) {
