@@ -11,12 +11,12 @@ create TABLE IF NOT EXISTS "booking" ( id BIGINT GENERATED ALWAYS AS IDENTITY PR
 
 create TABLE IF NOT EXISTS "comment" ( id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, text varchar(1024) NOT NULL, item_id bigint REFERENCES "item"(id) ON delete CASCADE NOT NULL, author_id bigint REFERENCES "user"(id) ON delete CASCADE NOT NULL, created timestamp WITHOUT TIME ZONE NOT NULL, UNIQUE(author_id, item_id));
 
---DELETE FROM "user";
---DELETE FROM "item";
---DELETE FROM "booking";
---DELETE FROM "comment";
---
---ALTER TABLE "user" ALTER id RESTART;
---ALTER TABLE "item" ALTER id RESTART;
---ALTER TABLE "booking" ALTER id RESTART;
---ALTER TABLE "comment" ALTER id RESTART;
+DELETE FROM "user";
+DELETE FROM "item";
+DELETE FROM "booking";
+DELETE FROM "comment";
+
+ALTER TABLE "user" ALTER id RESTART;
+ALTER TABLE "item" ALTER id RESTART;
+ALTER TABLE "booking" ALTER id RESTART;
+ALTER TABLE "comment" ALTER id RESTART;
