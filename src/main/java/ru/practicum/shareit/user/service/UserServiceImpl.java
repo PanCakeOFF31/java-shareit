@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserBookingDto;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserRequestDto;
+import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.exception.SameUserEmailException;
 import ru.practicum.shareit.user.exception.UserFieldValidationException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
@@ -39,28 +40,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> findUserDtoById(final long userId) {
-        log.info("UserServiceImpl - service.findUserDtoById({})", userId);
-        return userRepository.findUserDtoById(userId);
+    public Optional<UserResponseDto> findUserResponseDtoById(final long userId) {
+        log.info("UserServiceImpl - service.findUserResponseDtoById({})", userId);
+        return userRepository.findUserResponseDtoById(userId);
     }
 
     @Override
-    public UserDto getUserDtoById(long userId) {
-        log.info("UserServiceImpl - service.getUserDtoById({})", userId);
+    public UserResponseDto getUserResponseDtoById(long userId) {
+        log.info("UserServiceImpl - service.getUserResponseDtoById({})", userId);
         String message = String.format(NO_FOUND_USER, userId);
-        return findUserDtoById(userId)
+        return findUserResponseDtoById(userId)
                 .orElseThrow(() -> new UserNotFoundException(message));
     }
 
     @Override
     public Optional<UserBookingDto> findUserBookingDtoById(final long userId) {
-        log.info("UserServiceImpl - service.findUserBookingDto({})", userId);
+        log.info("UserServiceImpl - service.findUserBookingDtoById({})", userId);
         return userRepository.findUserBookingDtoById(userId);
     }
 
     @Override
     public UserBookingDto getUseroBokingDtoById(final long userId) {
-        log.info("UserServiceImpl - service.getUserBookingDtoById({})", userId);
+        log.info("UserServiceImpl - service.getUseroBokingDtoById({})", userId);
         String message = String.format(NO_FOUND_USER, userId);
         return findUserBookingDtoById(userId)
                 .orElseThrow(() -> new UserNotFoundException(message));
@@ -68,13 +69,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean containsUserById(final long userId) {
-        log.info("UserServiceImpl - service.containsById()");
+        log.info("UserServiceImpl - service.containsUserById()");
         return userRepository.existsById(userId);
     }
 
     @Override
     public void userExists(final long userId) {
-        log.info("UserServiceImpl - service.userIsExist()");
+        log.info("UserServiceImpl - service.userExists()");
 
         if (!containsUserById(userId)) {
             String message = String.format(NO_FOUND_USER, userId);
@@ -84,41 +85,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(final UserDto userDto) {
-        log.info("UserServiceImpl - service.createUser({})", userDto);
+    public UserResponseDto createUser(final UserRequestDto userRequestDto) {
+        log.info("UserServiceImpl - service.createUser({})", userRequestDto);
 
-        final User user = UserMapper.mapToUser(userDto);
+        final User user = UserMapper.mapToUser(userRequestDto);
 
-        emptyFieldValidation(user);
-
-        final User savedUser = userRepository.save(user);
-
-        return UserMapper.mapToUserDto(savedUser);
+        return UserMapper.mapToUserResponseDto(userRepository.save(user));
     }
 
     @Override
-    public UserDto deleteUserById(long userId) {
+    public UserResponseDto deleteUserById(long userId) {
         log.info("UserServiceImpl - service.deleteUserById({})", userId);
 
-        var deletedUser = getUserDtoById(userId);
+        var deletedUser = getUserResponseDtoById(userId);
         userRepository.deleteById(userId);
 
         return deletedUser;
     }
 
     @Override
-    public UserDto updateUser(final UserDto userDto, final long userId) {
-        log.info("UserServiceImpl - service.updateUser({}, {})", userId, userDto);
+    public UserResponseDto updateUser(final UserRequestDto userRequestDto, final long userId) {
+        log.info("UserServiceImpl - service.updateUser({}, {})", userId, userRequestDto);
 
-        final User gotUser = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(String.format(NO_FOUND_USER, userId)));
+        final User gotUser = getUserById(userId);
 
-        final String providedName = userDto.getName();
-        final String providedEmail = userDto.getEmail();
+        final String providedName = userRequestDto.getName();
+        final String providedEmail = userRequestDto.getEmail();
 
         if (providedName == null && providedEmail == null) {
             log.info("Прислан пользователь User без обновляемых полей. Никакого обновления не произошло");
-            return UserMapper.mapToUserDto(gotUser);
+            return UserMapper.mapToUserResponseDto(gotUser);
         }
 
         if (providedName != null)
@@ -126,21 +122,21 @@ public class UserServiceImpl implements UserService {
 
         if (providedEmail != null) {
             if (!providedEmail.equals(gotUser.getEmail())) {
-                emailValidation(userDto.getEmail());
+                emailValidation(userRequestDto.getEmail());
             }
 
             gotUser.setEmail(providedEmail);
         }
 
-        return UserMapper.mapToUserDto(userRepository.save(gotUser));
+        return UserMapper.mapToUserResponseDto(userRepository.save(gotUser));
     }
 
     @Override
-    public List<UserDto> getAll() {
+    public List<UserResponseDto> getAll() {
         log.debug("UserServiceImpl - service.getAll()");
 
         return userRepository.findAll(Pageable.ofSize(50)).stream()
-                .map(UserMapper::mapToUserDto)
+                .map(UserMapper::mapToUserResponseDto)
                 .collect(Collectors.toList());
     }
 

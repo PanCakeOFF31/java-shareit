@@ -1,7 +1,8 @@
 package ru.practicum.shareit.user.service;
 
 import ru.practicum.shareit.user.dto.UserBookingDto;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserRequestDto;
+import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -12,23 +13,23 @@ public interface UserService {
 
     User getUserById(final long userId);
 
-    Optional<UserDto> findUserDtoById(final long userId);
+    Optional<UserResponseDto> findUserResponseDtoById(final long userId);
 
-    UserDto getUserDtoById(final long userId);
+    UserResponseDto getUserResponseDtoById(final long userId);
 
     Optional<UserBookingDto> findUserBookingDtoById(final long userId);
 
     UserBookingDto getUseroBokingDtoById(final long userId);
 
-    List<UserDto> getAll();
+    List<UserResponseDto> getAll();
 
     boolean containsUserById(final long userId);
 
     void userExists(final long userId);
 
-    UserDto createUser(final UserDto userDto);
+    UserResponseDto createUser(final UserRequestDto userRequestDto);
 
-    UserDto updateUser(final UserDto userDto, final long userId);
+    UserResponseDto updateUser(final UserRequestDto userRequestDto, final long userId);
 
-    UserDto deleteUserById(final long userId);
+    UserResponseDto deleteUserById(final long userId);
 }

@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserRequestDto;
+import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
@@ -19,33 +20,33 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@Valid @RequestBody final UserDto user) {
+    public UserResponseDto createUser(@Valid @RequestBody final UserRequestDto user) {
         log.debug("/users - POST: createUser({})", user);
         return userService.createUser(user);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@Valid @RequestBody final UserDto user,
-                              @PathVariable final long userId) {
+    public UserResponseDto updateUser(@RequestBody final UserRequestDto user,
+                                      @PathVariable final long userId) {
         log.debug("/users/{} - PATCH: updateUser({},{})", userId, user, userId);
         return userService.updateUser(user, userId);
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable final long userId) {
+    public UserResponseDto getUserById(@PathVariable final long userId) {
         log.debug("/users/{} - GET: getUserById({})", userId, userId);
-        return userService.getUserDtoById(userId);
+        return userService.getUserResponseDtoById(userId);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public UserDto deleteUserById(@PathVariable final long userId) {
+    public UserResponseDto deleteUserById(@PathVariable final long userId) {
         log.debug("/users/{} - DELETE: deleteUserById({})", userId, userId);
         return userService.deleteUserById(userId);
     }
 
     @GetMapping
-    public Collection<UserDto> getUsers() {
+    public Collection<UserResponseDto> getUsers() {
         log.debug("/users - GET: getUsers()");
         return userService.getAll();
     }

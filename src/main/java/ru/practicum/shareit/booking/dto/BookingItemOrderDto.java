@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -11,4 +13,6 @@ import lombok.*;
 public class BookingItemOrderDto {
     private long id;
     private long bookerId;
+    private LocalDateTime start;
+    private LocalDateTime end;
 }

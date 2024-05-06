@@ -64,6 +64,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.existsById(bookingId);
     }
 
+    @Override
     public void bookingExists(final long bookingId) {
         log.debug("BookingServiceImpl - service.bookingExists()");
 
@@ -118,10 +119,6 @@ public class BookingServiceImpl implements BookingService {
 
         final Booking approvedBooking = bookingRepository.save(booking);
 
-//        Booking copy = new Booking(approvedBooking);
-//        copy.setStart(null);
-//        copy.setEnd(null);
-
         return BookingMapper.mapToBookingResponseDto(approvedBooking);
     }
 
@@ -147,11 +144,14 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.mapToBookingResponseDto(getBookingByIdAndOwnerIdOrBookerId(bookerOrOwnerId, bookingId));
     }
 
-    public State stateValidation(final String state) {
+    private State stateValidation(final String state) {
+
         try {
             return State.valueOf(state);
         } catch (RuntimeException ignore) {
-            throw new UnsupportedStateException();
+            String message = String.format(UNSUPPORTED_STATUS, state);
+            log.warn(message);
+            throw new UnsupportedStateException(message);
         }
     }
 
@@ -170,13 +170,13 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository
                         .findByBookerIdAndEndLessThanOrderByStartDesc(bookerId, now, pageable);
                 break;
-            case FUTURE:
-                result = bookingRepository
-                        .findByBookerIdAndStartGreaterThanEqualOrderByStartDesc(bookerId, now, pageable);
-                break;
             case CURRENT:
                 result = bookingRepository
                         .findByBookerIdAndStartLessThanEqualAndEndGreaterThanOrderByStartDesc(bookerId, now, now, pageable);
+                break;
+            case FUTURE:
+                result = bookingRepository
+                        .findByBookerIdAndStartGreaterThanEqualOrderByStartDesc(bookerId, now, pageable);
                 break;
             case WAITING:
                 result = bookingRepository
@@ -209,13 +209,13 @@ public class BookingServiceImpl implements BookingService {
                 result = bookingRepository
                         .findByItemOwnerIdAndEndLessThanOrderByStartDesc(ownerId, now, pageable);
                 break;
-            case FUTURE:
-                result = bookingRepository
-                        .findByItemOwnerIdAndStartGreaterThanEqualOrderByStartDesc(ownerId, now, pageable);
-                break;
             case CURRENT:
                 result = bookingRepository
                         .findByItemOwnerIdAndStartLessThanEqualAndEndGreaterThanOrderByStartDesc(ownerId, now, now, pageable);
+                break;
+            case FUTURE:
+                result = bookingRepository
+                        .findByItemOwnerIdAndStartGreaterThanEqualOrderByStartDesc(ownerId, now, pageable);
                 break;
             case WAITING:
                 result = bookingRepository

@@ -2,6 +2,7 @@ package ru.practicum.shareit.common.handler;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -178,6 +179,16 @@ public class CommonControllerAdvice {
 
         return new ErrorResponse("Проблема с создание комментария",
                 "Пользователь не бронировал этот предмет, нельзя писать в таком случае коммент",
+                exception.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDataIntegrityViolationException(final DataIntegrityViolationException exception) {
+        log.debug(className + "- handleDataIntegrityViolationException");
+
+        return new ErrorResponse("Конфликт с интеграцией данных в хранилище",
+                "Нарушение Data Integrity в БД",
                 exception.getMessage());
     }
 

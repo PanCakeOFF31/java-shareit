@@ -31,15 +31,15 @@ public interface ItemService {
 
     void ownerOwnsItem(final long itemId, final long ownerId);
 
-    ItemRequestDto createItem(final ItemRequestDto itemDto, final long userId);
+    ItemResponseDto createItem(final ItemRequestDto itemDto, final long userId);
 
-    ItemRequestDto updateItem(final ItemRequestDto itemDto, final long userId, final long itemId);
+    ItemResponseDto updateItem(final ItemRequestDto itemDto, final long userId, final long itemId);
 
     List<ItemResponseDto> getItemsByOwner(final long userId);
 
-    List<ItemRequestDto> searchItems(final long userId, final String text);
+    List<ItemResponseDto> searchItems(final long userId, final String text);
 
-    List<ItemRequestDto> getAllItems();
+    List<ItemResponseDto> getAllItems();
 
     List<CommentResponseDto> getAllComments();
 

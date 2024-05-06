@@ -23,36 +23,36 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemRequestDto createItem(@Valid @RequestBody final ItemRequestDto item,
-                                     @RequestHeader("X-Sharer-User-Id") final long userId) {
-        log.debug("/items - POST: createItem({}, {})", item, userId);
-        return itemService.createItem(item, userId);
+    public ItemResponseDto createItem(@Valid @RequestBody final ItemRequestDto item,
+                                      @RequestHeader("X-Sharer-User-Id") final Long ownerId) {
+        log.debug("/items - POST: createItem({}, {})", item, ownerId);
+        return itemService.createItem(item, ownerId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemRequestDto updateItem(@Valid @RequestBody final ItemRequestDto item,
-                                     @RequestHeader("X-Sharer-User-Id") final long userId,
-                                     @PathVariable final long itemId) {
-        log.debug("/items/{} - PATCH: updateItem({}, {}, {})", itemId, item, userId, itemId);
-        return itemService.updateItem(item, userId, itemId);
+    public ItemResponseDto updateItem(@RequestBody final ItemRequestDto item,
+                                      @RequestHeader("X-Sharer-User-Id") final Long ownerId,
+                                      @PathVariable final long itemId) {
+        log.debug("/items/{} - PATCH: updateItem({}, {}, {})", itemId, item, ownerId, itemId);
+        return itemService.updateItem(item, ownerId, itemId);
     }
 
     @GetMapping("/{itemId}")
     public ItemResponseDto getItem(@PathVariable final long itemId,
-                                   @RequestHeader("X-Sharer-User-Id") final long userId) {
-        log.debug("/items/{} - GET: getItem({}, {})", itemId, itemId, userId);
-        return itemService.getItemDtoById(itemId, userId);
+                                   @RequestHeader("X-Sharer-User-Id") final Long ownerId) {
+        log.debug("/items/{} - GET: getItem({}, {})", itemId, itemId, ownerId);
+        return itemService.getItemDtoById(itemId, ownerId);
     }
 
     @GetMapping
-    public List<ItemResponseDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") final long ownerId) {
+    public List<ItemResponseDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") final Long ownerId) {
         log.debug("/items - GET: getItemsByUser({})", ownerId);
         return itemService.getItemsByOwner(ownerId);
     }
 
     @GetMapping("/search")
-    public List<ItemRequestDto> searchItems(@RequestHeader("X-Sharer-User-Id") final long userId,
-                                            @RequestParam final String text) {
+    public List<ItemResponseDto> searchItems(@RequestHeader("X-Sharer-User-Id") final Long userId,
+                                             @RequestParam final String text) {
         log.debug("/items/search?text={} - GET: searchItems({}, {})", text, userId, text);
         return itemService.searchItems(userId, text);
     }
@@ -60,7 +60,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
 //    @ResponseStatus(HttpStatus.CREATED)
     public CommentResponseDto createComment(@Valid @RequestBody final CommentRequestDto commentDto,
-                                            @RequestHeader("X-Sharer-User-Id") final long ownerId,
+                                            @RequestHeader("X-Sharer-User-Id") final Long ownerId,
                                             @PathVariable final long itemId) {
         log.debug("/items/{}/commentDto - POST: createComment({}, {}, {})", itemId, commentDto, ownerId, itemId);
         return itemService.createComment(commentDto, ownerId, itemId);
@@ -69,7 +69,7 @@ public class ItemController {
 
     //    TODO: служебный ENDPOINT
     @GetMapping("/all/item")
-    public Collection<ItemRequestDto> getAllItems() {
+    public Collection<ItemResponseDto> getAllItems() {
         log.debug("/items/all - GET: getAllItems()");
         return itemService.getAllItems();
     }

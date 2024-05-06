@@ -4,31 +4,24 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "person")
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Getter
 @Setter
+@Builder
 @ToString
-@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "person")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank
-    @Size(max = 128)
     @Column(length = 128, nullable = false)
     private String name;
 
     @Email
-    @NotBlank
-    @Size(max = 256)
     @Column(length = 256, nullable = false, unique = true)
     private String email;
 

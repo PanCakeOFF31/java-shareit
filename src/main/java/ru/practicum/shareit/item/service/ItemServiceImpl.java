@@ -17,7 +17,6 @@ import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
-import ru.practicum.shareit.item.exception.ItemFieldValidationException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemOwnerIncorrectException;
 import ru.practicum.shareit.item.model.Item;
@@ -65,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item getItemByIdAndOwnerId(final long itemId, final long ownerId) {
-        log.debug("ItemServiceImpl - service.getItemById({}, {})", itemId, ownerId);
+        log.debug("ItemServiceImpl - service.getItemByIdAndOwnerId({}, {})", itemId, ownerId);
 
         itemExists(itemId);
 
@@ -93,8 +92,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public BookingItemOrderDto findNearLastBookingIdByItem(final long itemId) {
+        log.debug("ItemServiceImpl - service.findNearLastBookingIdByItem({})", itemId);
+
         Optional<BookingItemOrderDto> bookingItem = itemRepository
-                .findTopByItemIdAndEndLessThanEqualOrderByEndDesc(
+                .findTopBookingItemByItemIdAndEndLessThanEqualOrderByEndDesc(
                         itemId, LocalDateTime.now(), Pageable.ofSize(1)).stream()
                 .findFirst();
 
@@ -103,8 +104,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public BookingItemOrderDto findNearOnlyLastBookingIdByItem(final long itemId) {
+        log.debug("ItemServiceImpl - service.findNearOnlyLastBookingIdByItem({})", itemId);
+
         Optional<BookingItemOrderDto> bookingItem = itemRepository
-                .findTop1ByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc(
+                .findTopBookingItemByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc(
                         itemId, LocalDateTime.now(), Pageable.ofSize(1)).stream()
                 .findFirst();
 
@@ -112,8 +115,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public BookingItemOrderDto findNearNextBookingIdByItem(long itemId) {
+        log.debug("ItemServiceImpl - service.findNearNextBookingIdByItem({})", itemId);
+
         Optional<BookingItemOrderDto> bookingItem = itemRepository
-                .findTop1ByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc(
+                .findTopBookingItemByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc(
                         itemId,
                         LocalDateTime.now(),
                         List.of(Status.WAITING, Status.APPROVED),
@@ -164,27 +169,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemRequestDto createItem(final ItemRequestDto itemDto, long userId) {
+    public ItemResponseDto createItem(final ItemRequestDto itemDto, long userId) {
         log.debug("ItemServiceImpl - service.createItem({}, {})", itemDto, userId);
 
-        final Item item = ItemMapper.mapToItem(itemDto, userId);
-        emptyFieldValidation(item);
+        final Item item = ItemMapper.mapToItem(itemDto);
+        final User user = userService.getUserById(userId);
+        item.setOwner(user);
 
-        userService.userExists(userId);
-
-        final Item savedItem = itemRepository.save(item);
-        return ItemMapper.mapToItemRequestDto(savedItem);
+        return ItemMapper.mapToItemResponseDto(itemRepository.save(item));
     }
 
     @Override
-    public ItemRequestDto updateItem(ItemRequestDto itemDto, long userId, long itemId) {
-        log.debug("ItemServiceImpl - service.updateItem({}, {}, {})", itemDto, userId, itemId);
+    public ItemResponseDto updateItem(ItemRequestDto itemDto, long ownerId, long itemId) {
+        log.debug("ItemServiceImpl - service.updateItem({}, {}, {})", itemDto, ownerId, itemId);
 
-        final Item gotItem = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException(String.format(NO_FOUND_ITEM, itemId)));
-
-        if (gotItem.getOwner().getId() != userId)
-            throw new ItemOwnerIncorrectException(String.format(INCORRECT_OWNER, userId, itemId));
+        final Item gotItem = getItemByIdAndOwnerId(itemId, ownerId);
 
         String providedName = itemDto.getName();
         String providedDescription = itemDto.getDescription();
@@ -192,7 +191,7 @@ public class ItemServiceImpl implements ItemService {
 
         if (providedName == null && providedDescription == null && providedAvailable == null) {
             log.info("Прислан объект Item без обновляемых полей. Никакого обновления не произошло");
-            return ItemMapper.mapToItemRequestDto(gotItem);
+            return ItemMapper.mapToItemResponseDto(gotItem);
         }
 
         if (providedName != null)
@@ -204,7 +203,7 @@ public class ItemServiceImpl implements ItemService {
         if (providedAvailable != null)
             gotItem.setAvailable(providedAvailable);
 
-        return ItemMapper.mapToItemRequestDto(itemRepository.save(gotItem));
+        return ItemMapper.mapToItemResponseDto(itemRepository.save(gotItem));
     }
 
 
@@ -225,24 +224,25 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemRequestDto> searchItems(long userId, String text) {
+    public List<ItemResponseDto> searchItems(long userId, String text) {
         log.debug("ItemServiceImpl - service.searchItems({}, {})", userId, text);
 
         if (text.isBlank())
             return List.of();
 
-        return ItemMapper.mapToItemRequestDto(itemRepository
+        return ItemMapper.mapToItemResponseDto(itemRepository
                 .findItemsByNameOrDescriptionText(text.trim().toLowerCase())
         );
     }
 
     @Override
     public CommentResponseDto createComment(CommentRequestDto commentRequestDto, long userId, long itemId) {
+        log.debug("ItemServiceImpl - service.createComment({}, {}, {})", commentRequestDto, userId, itemId);
 
         final Item item = getItemById(itemId);
         final User user = userService.getUserById(userId);
 
-        userBookedItem(itemId, userId);
+        userBookedWheneverItem(itemId, userId);
 
         final Comment comment = CommentMapper.mapToComment(commentRequestDto);
 
@@ -255,33 +255,20 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.mapToCommentResponseDto(saveComment);
     }
 
-    private void userBookedItem(final long itemId, final long bookerId) {
+    private void userBookedWheneverItem(final long itemId, final long bookerId) {
+        log.debug("ItemServiceImpl - service.userBookedItem({}, {})", itemId, bookerId);
+
         if (!bookingRepository.existsBookingByItemIdAndBookerIdAndStatusIsNotAndEndLessThan(
                 itemId, bookerId, Status.REJECTED, LocalDateTime.now()))
             throw new UserNotBookedItemException();
     }
 
-    private void emptyFieldValidation(final Item item) {
-        log.debug("ItemServiceImpl - service.emptyFieldValidation({})", item);
-
-        String name = item.getName();
-        String description = item.getDescription();
-        Boolean available = item.getAvailable();
-
-        if (name == null || description == null || available == null
-                || name.isBlank() || description.isBlank()) {
-            String message = "Отсутствует часть обязательны полей name/description/available - " + item;
-            log.warn(message);
-            throw new ItemFieldValidationException(message);
-        }
-    }
-
     //    TODO: служебный метод
     @Override
-    public List<ItemRequestDto> getAllItems() {
+    public List<ItemResponseDto> getAllItems() {
         log.debug("ItemServiceImpl - service.getAllItems()");
         return itemRepository.findAll(Pageable.ofSize(100)).stream()
-                .map(ItemMapper::mapToItemRequestDto)
+                .map(ItemMapper::mapToItemResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -296,4 +283,18 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
+//    private void emptyFieldValidation(final Item item) {
+//        log.debug("ItemServiceImpl - service.emptyFieldValidation({})", item);
+//
+//        String name = item.getName();
+//        String description = item.getDescription();
+//        Boolean available = item.getAvailable();
+//
+//        if (name == null || description == null || available == null
+//                || name.isBlank() || description.isBlank()) {
+//            String message = "Отсутствует часть обязательны полей name/description/available - " + item;
+//            log.warn(message);
+//            throw new ItemFieldValidationException(message);
+//        }
+//    }
 }

@@ -5,37 +5,28 @@ import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "item")
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Getter
 @Setter
+@Builder
 @ToString
-@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "item")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank
-    @Size(max = 128)
     @Column(length = 128, nullable = false)
     private String name;
 
-    @NotBlank
-    @Size(max = 1024)
     @Column(length = 1024, nullable = false)
     private String description;
 
-    @NotNull
     @Column(name = "is_available", nullable = false)
     private Boolean available;
 

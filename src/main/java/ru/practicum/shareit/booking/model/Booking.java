@@ -5,28 +5,24 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "booking")
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Getter
 @Setter
+@Builder
 @ToString
-@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "booking")
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotNull
     @Column(name = "booking_start", nullable = false)
     private LocalDateTime start;
 
-    @NotNull
     @Column(name = "booking_end", nullable = false)
     private LocalDateTime end;
 

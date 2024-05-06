@@ -29,35 +29,38 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findItemsByNameOrDescriptionText(@Param("text") final String text);
 
     //        Last booking
-    @Query("SELECT new ru.practicum.shareit.booking.dto.BookingItemOrderDto(b.id as id, u.id as bookerId)  " +
+    @Query("SELECT new ru.practicum.shareit.booking.dto.BookingItemOrderDto(" +
+            "b.id as id, u.id as bookerId, b.start as start, b.end as end)  " +
             "from Booking as b " +
             "LEFT JOIN FETCH User as u ON b.booker.id = u.id " +
             "LEFT JOIN FETCH Item as it ON b.item.id = it.id " +
             "WHERE b.item.id = :item_id AND b.end <= :now_time " +
             "ORDER BY b.end DESC ")
-    List<BookingItemOrderDto> findTopByItemIdAndEndLessThanEqualOrderByEndDesc(
+    List<BookingItemOrderDto> findTopBookingItemByItemIdAndEndLessThanEqualOrderByEndDesc(
             @Param("item_id") final long itemId, @Param("now_time") final LocalDateTime ldt, Pageable pageable);
 
     //    Only-Last
-    @Query("SELECT new ru.practicum.shareit.booking.dto.BookingItemOrderDto(b.id as id, u.id as bookerId)  " +
+    @Query("SELECT new ru.practicum.shareit.booking.dto.BookingItemOrderDto(" +
+            "b.id as id, u.id as bookerId, b.start as start, b.end as end)  " +
             "from Booking as b " +
             "LEFT JOIN FETCH User as u ON b.booker.id = u.id " +
             "LEFT JOIN FETCH Item as it ON b.item.id = it.id " +
             "WHERE b.item.id = :item_id " +
             "AND b.start <= :now_time AND b.end >= :now_time " +
             "ORDER BY b.end DESC ")
-    List<BookingItemOrderDto> findTop1ByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc(
+    List<BookingItemOrderDto> findTopBookingItemByItemIdAndStartLessThanEqualAndEndGreaterThanEqualOrderByEndDesc(
             @Param("item_id") final long itemId, @Param("now_time") final LocalDateTime ldt1, Pageable pageable);
 
     //    Next
-    @Query("SELECT new ru.practicum.shareit.booking.dto.BookingItemOrderDto(b.id as id, u.id as bookerId)  " +
+    @Query("SELECT new ru.practicum.shareit.booking.dto.BookingItemOrderDto(" +
+            "b.id as id, u.id as bookerId, b.start as start, b.end as end)  " +
             "from Booking as b " +
             "LEFT JOIN FETCH User as u ON b.booker.id = u.id " +
             "LEFT JOIN FETCH Item as it ON b.item.id = it.id " +
             "WHERE b.item.id = :item_id " +
             "AND b.start >= :now_time AND b.status IN (:statuses)" +
             "ORDER BY b.start ASC ")
-    List<BookingItemOrderDto> findTop1ByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc(
+    List<BookingItemOrderDto> findTopBookingItemByItemIdAndStartGreaterThanEqualAndStatusInOrderByStartAsc(
             @Param("item_id") final long itemId, @Param("now_time") final LocalDateTime ldt,
             Collection<Status> statuses, Pageable pageable);
 
