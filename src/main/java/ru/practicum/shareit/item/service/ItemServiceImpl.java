@@ -194,6 +194,7 @@ public class ItemServiceImpl implements ItemService {
             return ItemMapper.mapToItemResponseDto(gotItem);
         }
 
+
         if (providedName != null)
             gotItem.setName(providedName);
 
@@ -282,19 +283,4 @@ public class ItemServiceImpl implements ItemService {
                 .map(CommentMapper::mapToCommentResponseDto)
                 .collect(Collectors.toList());
     }
-
-//    private void emptyFieldValidation(final Item item) {
-//        log.debug("ItemServiceImpl - service.emptyFieldValidation({})", item);
-//
-//        String name = item.getName();
-//        String description = item.getDescription();
-//        Boolean available = item.getAvailable();
-//
-//        if (name == null || description == null || available == null
-//                || name.isBlank() || description.isBlank()) {
-//            String message = "Отсутствует часть обязательны полей name/description/available - " + item;
-//            log.warn(message);
-//            throw new ItemFieldValidationException(message);
-//        }
-//    }
 }

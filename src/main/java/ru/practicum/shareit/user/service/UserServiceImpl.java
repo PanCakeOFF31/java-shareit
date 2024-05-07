@@ -8,8 +8,8 @@ import ru.practicum.shareit.user.dto.UserBookingDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.dto.UserRequestDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
+import ru.practicum.shareit.user.exception.EmailFieldValidationException;
 import ru.practicum.shareit.user.exception.SameUserEmailException;
-import ru.practicum.shareit.user.exception.UserFieldValidationException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -143,24 +143,16 @@ public class UserServiceImpl implements UserService {
     private void emailValidation(final String email) {
         log.info("UserServiceImpl - service.emailValidation({})", email);
 
+        if (!email.matches("^[\\w-\\.]+@[\\w-]+(\\.[\\w-]+)*\\.[a-z]{2,}$")) {
+            String message = "Нарушение валидации email - " + email;
+            log.warn(message);
+            throw new EmailFieldValidationException(message);
+        }
+
         if (userRepository.findUserByEmail(email).isPresent()) {
             String message = "Пользователь с таким email уже существует - " + email;
             log.warn(message);
             throw new SameUserEmailException(message);
-        }
-    }
-
-    private void emptyFieldValidation(final User user) {
-        log.info("UserServiceImpl - service.emptyFieldValidation({})", user);
-
-        String name = user.getName();
-        String email = user.getEmail();
-
-        if (name == null || email == null
-                || name.isBlank() || email.isBlank()) {
-            String message = "Отсутствует часть обязательны полей name/email - " + user;
-            log.warn(message);
-            throw new UserFieldValidationException(message);
         }
     }
 }

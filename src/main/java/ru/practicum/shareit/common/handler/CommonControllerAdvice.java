@@ -14,6 +14,7 @@ import ru.practicum.shareit.common.exception.MethodNotImplemented;
 import ru.practicum.shareit.item.exception.ItemFieldValidationException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemOwnerIncorrectException;
+import ru.practicum.shareit.user.exception.EmailFieldValidationException;
 import ru.practicum.shareit.user.exception.SameUserEmailException;
 import ru.practicum.shareit.user.exception.UserFieldValidationException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
@@ -109,6 +110,16 @@ public class CommonControllerAdvice {
 
         return new ErrorResponse("Ошибка валидация полей пользователя",
                 "В JSON объекте отсутствуют необходимые поля",
+                exception.getMessage());
+    }
+
+    @ExceptionHandler(EmailFieldValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleEmailFieldValidationException(final EmailFieldValidationException exception) {
+        log.debug(className + "- handleEmailFieldValidationException");
+
+        return new ErrorResponse("Ошибка валидация почты пользователя",
+                "В JSON объекте email не соответствует регулярному выражению",
                 exception.getMessage());
     }
 
