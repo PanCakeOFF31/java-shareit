@@ -1,24 +1,35 @@
 package ru.practicum.shareit.user.service;
 
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserBookingDto;
+import ru.practicum.shareit.user.dto.UserRequestDto;
+import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
-    List<UserDto> getAll();
-
-    boolean containsUserById(final long userId);
-
-    void userIsExist(final long userId);
-
-    UserDto getUserDtoById(final long userId);
+    Optional<User> findUserById(final long userId);
 
     User getUserById(final long userId);
 
-    UserDto createUser(final UserDto userDto);
+    Optional<UserResponseDto> findUserResponseDtoById(final long userId);
 
-    UserDto updateUser(final UserDto userDto, final long userId);
+    UserResponseDto getUserResponseDtoById(final long userId);
 
-    void deleteUserById(final long userId);
+    Optional<UserBookingDto> findUserBookingDtoById(final long userId);
+
+    UserBookingDto getUseroBokingDtoById(final long userId);
+
+    List<UserResponseDto> getAll();
+
+    boolean containsUserById(final long userId);
+
+    void userExists(final long userId);
+
+    UserResponseDto createUser(final UserRequestDto userRequestDto);
+
+    UserResponseDto updateUser(final UserRequestDto userRequestDto, final long userId);
+
+    UserResponseDto deleteUserById(final long userId);
 }

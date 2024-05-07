@@ -1,27 +1,47 @@
 package ru.practicum.shareit.item.service;
 
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.comment.dto.CommentRequestDto;
+import ru.practicum.shareit.comment.dto.CommentResponseDto;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
+import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ItemService {
-    ItemDto createItem(final ItemDto item, final long userId);
+    Optional<Item> findItemById(final long itemId);
 
-    ItemDto updateItem(final ItemDto item, final long userId, final long itemId);
+    Item getItemById(final long itemId);
 
-    ItemDto getItemDto(final long userId, final long itemId);
+    Optional<Item> findItemByIdAndOwnerId(final long itemId, final long ownerId);
 
-    Item getItem(final long userId, final long itemId);
+    Item getItemByIdAndOwnerId(final long itemId, final long ownerId);
 
-    List<ItemDto> getItemsByUser(final long userId);
+    ItemResponseDto getItemDtoById(final long itemId, final long ownerId);
 
-    List<ItemDto> searchItems(final long userId, final String text);
-
-    List<ItemDto> getAll();
-
-    void itemIsExist(final long itemId);
+    ItemBookingDto getItemBookingDtoById(final long itemId, final long ownerId);
 
     boolean containsItemById(final long itemId);
 
+    void itemExists(final long itemId);
+
+    boolean containsItemWithOwner(final long itemId, final long ownerId);
+
+    void ownerOwnsItem(final long itemId, final long ownerId);
+
+    ItemResponseDto createItem(final ItemRequestDto itemDto, final long userId);
+
+    ItemResponseDto updateItem(final ItemRequestDto itemDto, final long userId, final long itemId);
+
+    List<ItemResponseDto> getItemsByOwner(final long userId);
+
+    List<ItemResponseDto> searchItems(final long userId, final String text);
+
+    List<ItemResponseDto> getAllItems();
+
+    List<CommentResponseDto> getAllComments();
+
+    CommentResponseDto createComment(final CommentRequestDto commentDto, final long owneId, final long itemId);
 }

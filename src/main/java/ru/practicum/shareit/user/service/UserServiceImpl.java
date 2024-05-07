@@ -2,16 +2,20 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserBookingDto;
 import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserRequestDto;
+import ru.practicum.shareit.user.dto.UserResponseDto;
+import ru.practicum.shareit.user.exception.EmailFieldValidationException;
 import ru.practicum.shareit.user.exception.SameUserEmailException;
-import ru.practicum.shareit.user.exception.UserFieldValidationException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,87 +26,56 @@ public class UserServiceImpl implements UserService {
     private static final String NO_FOUND_USER = "Такого пользователя с id: %d не существует в хранилище";
 
     @Override
-    public UserDto createUser(final UserDto userDto) {
-        log.info("UserServiceImpl - service.createUser({})", userDto);
-
-        final User user = UserMapper.toUser(userDto);
-
-        emptyFieldValidation(user);
-        emailValidation(user);
-
-        long assignedId = userRepository.addUser(user);
-        user.setId(assignedId);
-
-        return UserMapper.toUserDto(user);
+    public Optional<User> findUserById(final long userId) {
+        log.info("UserServiceImpl - service.findUserById({})", userId);
+        return userRepository.findById(userId);
     }
 
     @Override
-    public void deleteUserById(long userId) {
-        log.info("UserServiceImpl - service.deleteUserById({})", userId);
-
-        String message = String.format(NO_FOUND_USER, userId);
-        userRepository.deleteUserById(userId).orElseThrow(() -> new UserNotFoundException(message));
-    }
-
-    @Override
-    public UserDto updateUser(final UserDto userDto, final long userId) {
-        log.info("UserServiceImpl - service.updateUser({}, {})", userId, userDto);
-
-        final User gotUser = getUserById(userId);
-
-        final String providedName = userDto.getName();
-        final String providedEmail = userDto.getEmail();
-
-        if (providedName == null && providedEmail == null)
-            return UserMapper.toUserDto(gotUser);
-
-        if (providedName != null)
-            gotUser.setName(providedName);
-
-        if (providedEmail != null) {
-            if (!providedEmail.equals(gotUser.getEmail())) {
-                emailValidation(userDto);
-            }
-
-            gotUser.setEmail(providedEmail);
-        }
-
-        return UserMapper.toUserDto(userRepository.updateUser(gotUser));
-    }
-
-    @Override
-    public List<UserDto> getAll() {
-        log.info("UserServiceImpl - service.getAll()");
-        return userRepository.getAll().stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public UserDto getUserDtoById(long userId) {
-        log.info("UserServiceImpl - service.getUserDtoById({})", userId);
-        return UserMapper.toUserDto(getUserById(userId));
-    }
-
-    @Override
-    public User getUserById(long userId) {
+    public User getUserById(final long userId) {
         log.info("UserServiceImpl - service.getUserById({})", userId);
-
         String message = String.format(NO_FOUND_USER, userId);
-        return userRepository
-                .findUserById(userId)
+        return findUserById(userId)
+                .orElseThrow(() -> new UserNotFoundException(message));
+    }
+
+    @Override
+    public Optional<UserResponseDto> findUserResponseDtoById(final long userId) {
+        log.info("UserServiceImpl - service.findUserResponseDtoById({})", userId);
+        return userRepository.findUserResponseDtoById(userId);
+    }
+
+    @Override
+    public UserResponseDto getUserResponseDtoById(long userId) {
+        log.info("UserServiceImpl - service.getUserResponseDtoById({})", userId);
+        String message = String.format(NO_FOUND_USER, userId);
+        return findUserResponseDtoById(userId)
+                .orElseThrow(() -> new UserNotFoundException(message));
+    }
+
+    @Override
+    public Optional<UserBookingDto> findUserBookingDtoById(final long userId) {
+        log.info("UserServiceImpl - service.findUserBookingDtoById({})", userId);
+        return userRepository.findUserBookingDtoById(userId);
+    }
+
+    @Override
+    public UserBookingDto getUseroBokingDtoById(final long userId) {
+        log.info("UserServiceImpl - service.getUseroBokingDtoById({})", userId);
+        String message = String.format(NO_FOUND_USER, userId);
+        return findUserBookingDtoById(userId)
                 .orElseThrow(() -> new UserNotFoundException(message));
     }
 
     @Override
     public boolean containsUserById(final long userId) {
-        log.info("UserServiceImpl - service.containsById()");
-        return userRepository.contains(userId);
+        log.info("UserServiceImpl - service.containsUserById()");
+        return userRepository.existsById(userId);
     }
 
     @Override
-    public void userIsExist(final long userId) {
-        log.info("UserServiceImpl - service.userIsExist()");
+    public void userExists(final long userId) {
+        log.info("UserServiceImpl - service.userExists()");
 
         if (!containsUserById(userId)) {
             String message = String.format(NO_FOUND_USER, userId);
@@ -111,31 +84,75 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void emailValidation(final User user) {
-        log.info("UserServiceImpl - service.emailValidation({})", user);
+    @Override
+    public UserResponseDto createUser(final UserRequestDto userRequestDto) {
+        log.info("UserServiceImpl - service.createUser({})", userRequestDto);
 
-        if (userRepository.containsEmail(user.getEmail())) {
-            String message = "Пользователь с таким email уже существует - " + user.getEmail();
+        final User user = UserMapper.mapToUser(userRequestDto);
+
+        return UserMapper.mapToUserResponseDto(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponseDto deleteUserById(long userId) {
+        log.info("UserServiceImpl - service.deleteUserById({})", userId);
+
+        var deletedUser = getUserResponseDtoById(userId);
+        userRepository.deleteById(userId);
+
+        return deletedUser;
+    }
+
+    @Override
+    public UserResponseDto updateUser(final UserRequestDto userRequestDto, final long userId) {
+        log.info("UserServiceImpl - service.updateUser({}, {})", userId, userRequestDto);
+
+        final User gotUser = getUserById(userId);
+
+        final String providedName = userRequestDto.getName();
+        final String providedEmail = userRequestDto.getEmail();
+
+        if (providedName == null && providedEmail == null) {
+            log.info("Прислан пользователь User без обновляемых полей. Никакого обновления не произошло");
+            return UserMapper.mapToUserResponseDto(gotUser);
+        }
+
+        if (providedName != null)
+            gotUser.setName(providedName);
+
+        if (providedEmail != null) {
+            if (!providedEmail.equals(gotUser.getEmail())) {
+                emailValidation(userRequestDto.getEmail());
+            }
+
+            gotUser.setEmail(providedEmail);
+        }
+
+        return UserMapper.mapToUserResponseDto(userRepository.save(gotUser));
+    }
+
+    @Override
+    public List<UserResponseDto> getAll() {
+        log.debug("UserServiceImpl - service.getAll()");
+
+        return userRepository.findAll(Pageable.ofSize(50)).stream()
+                .map(UserMapper::mapToUserResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    private void emailValidation(final String email) {
+        log.info("UserServiceImpl - service.emailValidation({})", email);
+
+        if (!email.matches("^[\\w-\\.]+@[\\w-]+(\\.[\\w-]+)*\\.[a-z]{2,}$")) {
+            String message = "Нарушение валидации email - " + email;
+            log.warn(message);
+            throw new EmailFieldValidationException(message);
+        }
+
+        if (userRepository.findUserByEmail(email).isPresent()) {
+            String message = "Пользователь с таким email уже существует - " + email;
             log.warn(message);
             throw new SameUserEmailException(message);
-        }
-    }
-
-    private void emailValidation(final UserDto user) {
-        emailValidation(UserMapper.toUser(user));
-    }
-
-    private void emptyFieldValidation(final User user) {
-        log.info("UserServiceImpl - service.emptyFieldValidation({})", user);
-
-        String name = user.getName();
-        String email = user.getEmail();
-
-        if (name == null || email == null
-                || name.isBlank() || email.isBlank()) {
-            String message = "Отсутствует часть обязательны полей name/email - " + user;
-            log.warn(message);
-            throw new UserFieldValidationException(message);
         }
     }
 }
