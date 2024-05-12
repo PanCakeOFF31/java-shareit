@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,14 +26,14 @@ public class Booking {
     @Column(name = "booking_end", nullable = false)
     private LocalDateTime end;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Item.class)
     @ToString.Exclude
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Item.class)
     private Item item;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @ToString.Exclude
-    @JoinColumn(name = "booker_id")
+    @JoinColumn(name = "booker_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     private User booker;
 
     @Column(name = "status", length = 10)

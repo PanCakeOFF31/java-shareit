@@ -9,7 +9,7 @@ import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
-import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<UserResponseDto> getUsers() {
+    public List<UserResponseDto> getUsers() {
         log.debug("/users - GET: getUsers()");
         return userService.getAll();
     }

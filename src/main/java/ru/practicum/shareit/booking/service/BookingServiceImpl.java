@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.item.exception.ItemFieldValidationException;
+import ru.practicum.shareit.common.CommonValidation;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -33,12 +34,13 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserService userService;
     private final ItemService itemService;
+
     private static final String NO_FOUND_BOOKING = "Такого брони с id: %d не существует в хранилище";
     private static final String UNSUPPORTED_STATUS = "Данный статус '%s' не поддерживается";
 
     @Override
     public Optional<Booking> findBookingByIdFetch(long bookingId) {
-        return bookingRepository.findBookingByIdFetch(bookingId);
+        return bookingRepository.findById(bookingId);
     }
 
     @Override
@@ -90,9 +92,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setBooker(user);
         booking.setItem(item);
 
-        final Booking savedBooking = bookingRepository.save(booking);
-
-        return BookingMapper.mapToBookingResponseDto(savedBooking);
+        return BookingMapper.mapToBookingResponseDto(bookingRepository.save(booking));
     }
 
     @Transactional
@@ -129,22 +129,22 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking getBookingByIdAndOwnerIdOrBookerId(long bookerOrOwnerId, long bookingId) {
+    public Booking getBookingByIdAndOwnerIdOrBookerId(long bookingId, long bookerOrOwnerId) {
         log.debug("BookingServiceImpl - service.getBooking({}, {})", bookerOrOwnerId, bookingId);
         return findByIdAndBookerIdOrOwnerId(bookingId, bookerOrOwnerId)
                 .orElseThrow(() -> new BookingNotFoundException(String.format(NO_FOUND_BOOKING, bookingId)));
     }
 
     @Override
-    public BookingResponseDto getBookingDto(long bookerOrOwnerId, long bookingId) {
-        log.debug("BookingServiceImpl - service.getBookingDto({}, {})", bookerOrOwnerId, bookingId);
+    public BookingResponseDto getBookingDto(long bookingId, long bookerOrOwnerId) {
+        log.debug("BookingServiceImpl - service.getBookingDto({}, {})", bookingId, bookerOrOwnerId);
 
         userService.userExists(bookerOrOwnerId);
 
-        return BookingMapper.mapToBookingResponseDto(getBookingByIdAndOwnerIdOrBookerId(bookerOrOwnerId, bookingId));
+        return BookingMapper.mapToBookingResponseDto(getBookingByIdAndOwnerIdOrBookerId(bookingId, bookerOrOwnerId));
     }
 
-    private State stateValidation(final String state) {
+    private State stateValidation(final String state) throws UnsupportedStateException {
 
         try {
             return State.valueOf(state);
@@ -156,14 +156,18 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponseDto> getAllBookingByBooker(long bookerId, final String state) {
+    public List<BookingResponseDto> getAllBookingByBooker(final long bookerId,
+                                                          final String state,
+                                                          final int from,
+                                                          final int size) {
 
+        CommonValidation.paginateValidation(from, size);
         userService.userExists(bookerId);
         State enumState = stateValidation(state);
 
-        Pageable pageable = Pageable.ofSize(100);
         List<Booking> result;
         var now = LocalDateTime.now();
+        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
 
         switch (enumState) {
             case PAST:
@@ -195,14 +199,18 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponseDto> getAllBookingByOwner(long ownerId, final String state) {
-        userService.userExists(ownerId);
+    public List<BookingResponseDto> getAllBookingByOwner(long ownerId,
+                                                         final String state,
+                                                         final int from,
+                                                         final int size) {
 
+        CommonValidation.paginateValidation(from, size);
+        userService.userExists(ownerId);
         State enumState = stateValidation(state);
 
-        Pageable pageable = Pageable.ofSize(100);
         List<Booking> result;
         var now = LocalDateTime.now();
+        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
 
         switch (enumState) {
             case PAST:
@@ -264,18 +272,10 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime start = bookingRequestDto.getStart();
         LocalDateTime end = bookingRequestDto.getEnd();
 
-        String message;
-
-        if (start == null || end == null) {
-            message = "Отсутствует часть обязательны полей start/end - " + bookingRequestDto;
-            log.warn(message);
-            throw new ItemFieldValidationException(message);
-        }
-
         if (end.isBefore(start) || end.equals(start) || start.isBefore(LocalDateTime.now())) {
-            message = "Не верные значения даты для бронирования - " + bookingRequestDto;
+            String message = "Не верные значения даты для бронирования - " + bookingRequestDto;
             log.warn(message);
-            throw new ItemFieldValidationException(message);
+            throw new BookingFieldValidationException(message);
         }
     }
 

@@ -2,10 +2,12 @@ package ru.practicum.shareit.item.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -76,19 +78,7 @@ public class ItemInMemoryRepo implements ItemRepo {
         return items.containsKey(itemId);
     }
 
-    @Override
-    public List<Item> getAllItems() {
-        log.info("ItemInMemoryRepository - service.getAll()");
-        return new ArrayList<>(items.values());
-    }
-
-    @Override
-    public List<Comment> getAllComments() {
-        return null;
-    }
-
     private long generateId() {
         return ++generatedId;
     }
-
 }

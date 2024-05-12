@@ -1,17 +1,18 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Getter
-@Setter
-@Builder
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class ItemRequestDto {
     @NotBlank
     @Size(max = 128, message = "Item.name - Минимальная длина имени - {min}, а максимальная {max} символов")
@@ -24,9 +25,5 @@ public class ItemRequestDto {
     @NotNull
     private Boolean available;
 
-    public ItemRequestDto(final ItemRequestDto otherItem) {
-        this.name = otherItem.name;
-        this.description = otherItem.description;
-        this.available = otherItem.available;
-    }
+    private Long requestId;
 }

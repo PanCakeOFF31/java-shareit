@@ -9,7 +9,6 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -22,10 +21,10 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookingResponseDto createBooking(@Valid @RequestBody final BookingRequestDto bookingDto,
-                                            @RequestHeader("X-Sharer-User-Id") final Long userId) {
+                                            @RequestHeader("X-Sharer-User-Id") final Long bookerId) {
         log.debug("/bookings - POST: createBooking({})", bookingDto);
 
-        return bookingService.createBooking(bookingDto, userId);
+        return bookingService.createBooking(bookingDto, bookerId);
     }
 
     @PatchMapping("/{bookingId}")
@@ -41,27 +40,24 @@ public class BookingController {
     public BookingResponseDto getBooking(@RequestHeader("X-Sharer-User-Id") final Long bookerOrOwnerId,
                                          @PathVariable final long bookingId) {
         log.debug("/bookings/{} - GET: getBooking({}, {})", bookingId, bookerOrOwnerId, bookingId);
-        return bookingService.getBookingDto(bookerOrOwnerId, bookingId);
+        return bookingService.getBookingDto(bookingId, bookerOrOwnerId);
     }
 
     @GetMapping
-    public List<BookingResponseDto> getAllBookingByUser(@RequestHeader("X-Sharer-User-Id") final Long bookerId,
-                                                        @RequestParam(required = false, defaultValue = "ALL") final String state) {
+    public List<BookingResponseDto> getAllBookingByBooker(@RequestHeader("X-Sharer-User-Id") final Long bookerId,
+                                                          @RequestParam(required = false, defaultValue = "ALL") final String state,
+                                                          @RequestParam(defaultValue = "0") final int from,
+                                                          @RequestParam(defaultValue = "10") final int size) {
         log.debug("/bookings?state={} - GET: getAllBookingByUser({}, {})", state, bookerId, state);
-        return bookingService.getAllBookingByBooker(bookerId, state);
+        return bookingService.getAllBookingByBooker(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingResponseDto> getAllBookingByOwner(@RequestHeader("X-Sharer-User-Id") final Long ownerId,
-                                                         @RequestParam(required = false, defaultValue = "ALL") final String state) {
+                                                         @RequestParam(required = false, defaultValue = "ALL") final String state,
+                                                         @RequestParam(defaultValue = "0") final int from,
+                                                         @RequestParam(defaultValue = "10") final int size) {
         log.debug("/bookings?state={} - GET: getAllBookingByOwner({}, {})", state, ownerId, state);
-        return bookingService.getAllBookingByOwner(ownerId, state);
-    }
-
-    //    TODO: служебный ENDPOINT
-    @GetMapping("/all")
-    public Collection<BookingResponseDto> getAll() {
-        log.debug("/bookings/all - GET: getAll()");
-        return bookingService.getAll();
+        return bookingService.getAllBookingByOwner(ownerId, state, from, size);
     }
 }

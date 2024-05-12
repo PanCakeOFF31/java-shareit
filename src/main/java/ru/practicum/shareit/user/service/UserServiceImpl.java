@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserBookingDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.dto.UserRequestDto;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private static final String NO_FOUND_USER = "Такого пользователя с id: %d не существует в хранилище";
@@ -32,7 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(final long userId) {
+    public User getUserById(final long userId) throws UserNotFoundException {
         log.info("UserServiceImpl - service.getUserById({})", userId);
         String message = String.format(NO_FOUND_USER, userId);
         return findUserById(userId)
@@ -46,10 +48,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUserResponseDtoById(long userId) {
+    public UserResponseDto getUserResponseDtoById(long userId) throws UserNotFoundException {
         log.info("UserServiceImpl - service.getUserResponseDtoById({})", userId);
         String message = String.format(NO_FOUND_USER, userId);
-        return findUserResponseDtoById(userId)
+        return this.findUserResponseDtoById(userId)
                 .orElseThrow(() -> new UserNotFoundException(message));
     }
 
@@ -60,10 +62,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserBookingDto getUseroBokingDtoById(final long userId) {
-        log.info("UserServiceImpl - service.getUseroBokingDtoById({})", userId);
+    public UserBookingDto getUseroBokingDtoById(final long userId) throws UserNotFoundException {
+        log.info("UserServiceImpl - service.getUserBookingDtoById({})", userId);
         String message = String.format(NO_FOUND_USER, userId);
-        return findUserBookingDtoById(userId)
+        return this.findUserBookingDtoById(userId)
                 .orElseThrow(() -> new UserNotFoundException(message));
     }
 
@@ -74,7 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void userExists(final long userId) {
+    public void userExists(final long userId) throws UserNotFoundException {
         log.info("UserServiceImpl - service.userExists()");
 
         if (!containsUserById(userId)) {
@@ -84,6 +86,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public UserResponseDto createUser(final UserRequestDto userRequestDto) {
         log.info("UserServiceImpl - service.createUser({})", userRequestDto);
@@ -93,6 +96,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.mapToUserResponseDto(userRepository.save(user));
     }
 
+    @Transactional
     @Override
     public UserResponseDto deleteUserById(long userId) {
         log.info("UserServiceImpl - service.deleteUserById({})", userId);
@@ -103,6 +107,7 @@ public class UserServiceImpl implements UserService {
         return deletedUser;
     }
 
+    @Transactional
     @Override
     public UserResponseDto updateUser(final UserRequestDto userRequestDto, final long userId) {
         log.info("UserServiceImpl - service.updateUser({}, {})", userId, userRequestDto);
@@ -135,7 +140,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDto> getAll() {
         log.debug("UserServiceImpl - service.getAll()");
 
-        return userRepository.findAll(Pageable.ofSize(50)).stream()
+        return userRepository.findAll(Pageable.ofSize(100)).stream()
                 .map(UserMapper::mapToUserResponseDto)
                 .collect(Collectors.toList());
     }

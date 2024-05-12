@@ -16,21 +16,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b " +
             "from Booking as b " +
-            "LEFT JOIN FETCH User as u ON b.booker.id = u.id " +
-            "LEFT JOIN FETCH Item as it ON b.item.id = it.id " +
-            "WHERE b.id = :bookingId")
-    Optional<Booking> findBookingByIdFetch(final long bookingId);
-
-    @Query("select b " +
-            "from Booking as b " +
-            "LEFT JOIN FETCH User as u ON b.booker.id = u.id " +
-            "LEFT JOIN FETCH Item as it ON b.item.id = it.id " +
+            "LEFT JOIN User as u ON b.booker.id = u.id " +
+            "LEFT JOIN Item as it ON b.item.id = it.id " +
             "where b.id = :booking_id and " +
             "(b.booker.id = :user_id OR b.item.owner.id = :user_id)"
     )
     Optional<Booking> findByIdAndBookerIdOrOwnerId(@Param("booking_id") final long bookingId,
                                                    @Param("user_id") final long bookerOrOwnerId);
-
 
     // State.Past
     List<Booking> findByBookerIdAndEndLessThanOrderByStartDesc(

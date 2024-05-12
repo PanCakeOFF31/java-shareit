@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.repository;
 
-import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -18,10 +17,4 @@ public interface ItemRepo {
     List<Item> searchItems(final long userId, final String text);
 
     boolean containsItemById(final long itemId);
-
-    //    TODO: удалить служебный метод
-    List<Item> getAllItems();
-
-    //    TODO: удалить служебный метод
-    List<Comment> getAllComments();
 }

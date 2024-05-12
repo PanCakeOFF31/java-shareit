@@ -1,30 +1,26 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.*;
-import ru.practicum.shareit.booking.dto.BookingItemOrderDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingOrderResponseDto;
 import ru.practicum.shareit.comment.dto.CommentResponseDto;
 
 import java.util.List;
 
-@Getter
-@Setter
-@Builder
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class ItemResponseDto {
     private long id;
     private String name;
     private String description;
     private Boolean available;
-    private BookingItemOrderDto lastBooking;
-    private BookingItemOrderDto nextBooking;
+    private BookingOrderResponseDto lastBooking;
+    private BookingOrderResponseDto nextBooking;
     private List<CommentResponseDto> comments;
+    private Long requestId;
 
-    public ItemResponseDto(final ItemResponseDto otherItem) {
-        this.id = otherItem.id;
-        this.name = otherItem.name;
-        this.description = otherItem.description;
-        this.available = otherItem.available;
-    }
 }
