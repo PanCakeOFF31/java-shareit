@@ -1,0 +1,13 @@
+    @Override
+    public Optional<UserBookingDto> findUserBookingDtoById(final long userId) {
+        log.info("UserServiceImpl - service.findUserBookingDtoById({})", userId);
+        return userRepository.findUserBookingDtoById(userId);
+    }
+
+    @Override
+    public UserBookingDto getUseroBokingDtoById(final long userId) throws UserNotFoundException {
+        log.info("UserServiceImpl - service.getUserBookingDtoById({})", userId);
+        String message = String.format(NO_FOUND_USER, userId);
+        return this.findUserBookingDtoById(userId)
+                .orElseThrow(() -> new UserNotFoundException(message));
+    }

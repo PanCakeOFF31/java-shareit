@@ -18,10 +18,6 @@ public interface UserService {
 
     UserResponseDto getUserResponseDtoById(final long userId) throws UserNotFoundException;
 
-    Optional<UserBookingDto> findUserBookingDtoById(final long userId);
-
-    UserBookingDto getUseroBokingDtoById(final long userId) throws UserNotFoundException;
-
     List<UserResponseDto> getAll();
 
     boolean containsUserById(final long userId);

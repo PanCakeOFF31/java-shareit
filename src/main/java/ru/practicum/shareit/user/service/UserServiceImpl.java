@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.user.dto.UserBookingDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.dto.UserRequestDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
@@ -52,20 +51,6 @@ public class UserServiceImpl implements UserService {
         log.info("UserServiceImpl - service.getUserResponseDtoById({})", userId);
         String message = String.format(NO_FOUND_USER, userId);
         return this.findUserResponseDtoById(userId)
-                .orElseThrow(() -> new UserNotFoundException(message));
-    }
-
-    @Override
-    public Optional<UserBookingDto> findUserBookingDtoById(final long userId) {
-        log.info("UserServiceImpl - service.findUserBookingDtoById({})", userId);
-        return userRepository.findUserBookingDtoById(userId);
-    }
-
-    @Override
-    public UserBookingDto getUseroBokingDtoById(final long userId) throws UserNotFoundException {
-        log.info("UserServiceImpl - service.getUserBookingDtoById({})", userId);
-        String message = String.format(NO_FOUND_USER, userId);
-        return this.findUserBookingDtoById(userId)
                 .orElseThrow(() -> new UserNotFoundException(message));
     }
 
