@@ -16,7 +16,6 @@ import ru.practicum.shareit.comment.dto.CommentResponseDto;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
 import ru.practicum.shareit.common.CommonValidation;
-import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
@@ -139,12 +138,6 @@ public class ItemServiceImpl implements ItemService {
                 .findFirst();
 
         return bookingItem.orElse(null);
-    }
-
-    @Override
-    public ItemBookingDto getItemBookingDtoById(final long ownerId, final long itemId) {
-        log.debug("ItemServiceImpl - service.getItemBookingDtoById({}, {})", ownerId, itemId);
-        return ItemMapper.mapToItemBookingDto(getItemById(itemId));
     }
 
     @Override

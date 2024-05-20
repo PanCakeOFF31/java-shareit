@@ -22,9 +22,4 @@ public class UserRequestDto {
     @NotBlank
     @Size(max = 256, message = "User.email - Минимальная длина почты - {min}, а максимальная {max} символов")
     private String email;
-
-    public UserRequestDto(final UserRequestDto otherUser) {
-        this.name = otherUser.name;
-        this.email = otherUser.email;
-    }
 }

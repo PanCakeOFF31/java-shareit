@@ -35,11 +35,4 @@ public class Comment {
     @JoinColumn(name = "author_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     private User author;
-
-    public Comment(Comment otherComment) {
-        this.id = otherComment.id;
-        this.text = otherComment.text;
-        this.item = otherComment.item;
-        this.author = otherComment.author;
-    }
 }

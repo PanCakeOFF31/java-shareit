@@ -1,0 +1,5 @@
+    @Override
+    public ItemBookingDto getItemBookingDtoById(final long ownerId, final long itemId) {
+        log.debug("ItemServiceImpl - service.getItemBookingDtoById({}, {})", ownerId, itemId);
+        return ItemMapper.mapToItemBookingDto(getItemById(itemId));
+    }

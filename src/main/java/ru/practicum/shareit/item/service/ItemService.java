@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.comment.dto.CommentRequestDto;
 import ru.practicum.shareit.comment.dto.CommentResponseDto;
-import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
@@ -20,8 +19,6 @@ public interface ItemService {
     Item getItemByIdAndOwnerId(final long itemId, final long ownerId);
 
     ItemResponseDto getItemDtoById(final long itemId, final long ownerId);
-
-    ItemBookingDto getItemBookingDtoById(final long itemId, final long ownerId);
 
     List<Item> getItemsByRequestId(final long requestId);
 

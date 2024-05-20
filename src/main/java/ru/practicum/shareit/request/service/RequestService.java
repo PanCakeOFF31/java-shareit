@@ -14,10 +14,6 @@ public interface RequestService {
 
     Request getRequestDtoById(final long requestId) throws RequestNotFoundException;
 
-    boolean containsRequestById(final long requestId);
-
-    void requestExists(final long requestId) throws RequestNotFoundException;
-
     ReqCreateDto createRequest(final ReqRequestDto reqRequestDto, final long requesterId);
 
     ReqGetDto getRequestDtoById(final long requestId, final long requesterId);

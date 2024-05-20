@@ -47,23 +47,6 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new RequestNotFoundException(String.format(NO_FOUND_REQUEST, requestId)));
     }
 
-    @Override
-    public boolean containsRequestById(final long requestId) {
-        log.debug("RequestServiceImpl - service.containsRequestById({})", requestId);
-        return requestRepository.existsById(requestId);
-    }
-
-    @Override
-    public void requestExists(final long requestId) {
-        log.debug("RequestServiceImpl - service.requestIsExists({})", requestId);
-
-        if (!containsRequestById(requestId)) {
-            String message = String.format(NO_FOUND_REQUEST, requestId);
-            log.warn(message);
-            throw new RequestNotFoundException(message);
-        }
-    }
-
     @Transactional
     @Override
     public ReqCreateDto createRequest(ReqRequestDto reqRequestDto, long requesterId) {

@@ -15,14 +15,13 @@ import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.common.CommonValidation;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.item.exception.ItemOwnerIncorrectException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,17 +38,6 @@ public class BookingServiceImpl implements BookingService {
     private static final String UNSUPPORTED_STATUS = "Данный статус '%s' не поддерживается";
 
     @Override
-    public Optional<Booking> findBookingByIdFetch(long bookingId) {
-        return bookingRepository.findById(bookingId);
-    }
-
-    @Override
-    public Booking getBookingByIdFetch(long bookingId) {
-        return findBookingByIdFetch(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException(String.format(NO_FOUND_BOOKING, bookingId)));
-    }
-
-    @Override
     public Optional<Booking> findBookingById(long bookingId) {
         return bookingRepository.findById(bookingId);
     }
@@ -58,23 +46,6 @@ public class BookingServiceImpl implements BookingService {
     public Booking getBookingById(long bookingId) {
         return findBookingById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException(String.format(NO_FOUND_BOOKING, bookingId)));
-    }
-
-    @Override
-    public boolean containsBookingById(final long bookingId) {
-        log.debug("BookingServiceImpl - service.containsItemById()");
-        return bookingRepository.existsById(bookingId);
-    }
-
-    @Override
-    public void bookingExists(final long bookingId) {
-        log.debug("BookingServiceImpl - service.bookingExists()");
-
-        if (!containsBookingById(bookingId)) {
-            String message = String.format(NO_FOUND_BOOKING, bookingId);
-            log.warn(message);
-            throw new ItemNotFoundException(message);
-        }
     }
 
     @Transactional
@@ -101,13 +72,16 @@ public class BookingServiceImpl implements BookingService {
 
         userService.userExists(ownerId);
 
-        final Booking booking = getBookingByIdFetch(bookingId);
+        final Booking booking = getBookingById(bookingId);
 
         try {
             itemService.ownerOwnsItem(booking.getItem().getId(), ownerId);
-        } catch (Exception e) {
+        } catch (ItemOwnerIncorrectException e) {
 //            Дублирую, так как в этом случае Postman тесту нужен не 403, а 404
-            throw new BookingItemOwnerIncorrectException();
+            String message =
+                    String.format("Пользователь c id %d  - не является владельцем вещи id %d", booking.getItem().getId(), ownerId);
+            log.warn(message);
+            throw new BookingItemOwnerIncorrectException(message);
         }
 
         statusToBookValidation(booking.getStatus(), approved);
@@ -240,13 +214,6 @@ public class BookingServiceImpl implements BookingService {
 
         return BookingMapper.mapToBookingResponseDto(result);
     }
-
-
-    @Override
-    public Collection<BookingResponseDto> getAll() {
-        return BookingMapper.mapToBookingResponseDto(bookingRepository.findAll());
-    }
-
 
     private void itemToCreateBookValidation(final Item item, final long bookerId) {
         log.debug("BookingServiceImpl - service.itemIsAvailable({})", item);
