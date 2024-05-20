@@ -5,7 +5,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -155,18 +154,18 @@ public class ItemIntegrationTest {
                 .build();
     }
 
+    private void assertRepositorySize(long uQ, long iQ, long bQ, long rQ, long cQ) {
+
+        assertEquals(uQ, userRepository.count());
+        assertEquals(iQ, itemRepository.count());
+        assertEquals(bQ, bookingRepository.count());
+        assertEquals(rQ, requestRepository.count());
+        assertEquals(cQ, commentRepository.count());
+    }
+
     @Nested
-    @Rollback(false)
     @TestMethodOrder(MethodOrderer.MethodName.class)
     class OrderedIntegrationTestWithoutRollback {
-        private void assertRepositorySize(long uQ, long iQ, long bQ, long rQ, long cQ) {
-
-            assertEquals(uQ, userRepository.count());
-            assertEquals(iQ, itemRepository.count());
-            assertEquals(bQ, bookingRepository.count());
-            assertEquals(rQ, requestRepository.count());
-            assertEquals(cQ, commentRepository.count());
-        }
 
         @Test
         public void test_T1010_PS01_create_Owner1Item1() {

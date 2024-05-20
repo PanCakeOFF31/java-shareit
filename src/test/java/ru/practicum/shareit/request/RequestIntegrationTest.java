@@ -5,7 +5,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.comment.repository.CommentRepository;
@@ -15,6 +15,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.controller.RequestController;
 import ru.practicum.shareit.request.dto.ReqGetDto;
 import ru.practicum.shareit.request.dto.ReqRequestDto;
+import ru.practicum.shareit.request.exception.RequestNotFoundException;
 import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserRequestDto;
@@ -24,11 +25,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @SpringBootTest
-@Rollback
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class RequestIntegrationTest {
@@ -146,14 +147,39 @@ public class RequestIntegrationTest {
 
 
     @Test
-    public void test_T0010_PS01() {
+    @Sql(scripts = "file:./src/test/java/resources/clear-db.sql", executionPhase = AFTER_TEST_METHOD)
+    public void test_T0010_NS01_RequestNotFoundException() {
+        assertRepositorySize(0, 0, 0, 0, 0);
+
+        requester1Id = userController.createUser(requester1).getId();
+        request1Id = requestController.createRequest(request1, requester1Id).getId();
+
+        assertThrows(RequestNotFoundException.class, () -> requestController.getRequestByRequestId(requester1Id, request1Id + 1));
+        assertRepositorySize(1, 0, 0, 1, 0);
+    }
+
+    @Test
+    @Sql(scripts = "file:./src/test/java/resources/clear-db.sql", executionPhase = AFTER_TEST_METHOD)
+    public void test_T0010_NS02_RequestNotFoundException() {
+        assertRepositorySize(0, 0, 0, 0, 0);
+
+        requester1Id = userController.createUser(requester1).getId();
+        request1Id = requestController.createRequest(request1, requester1Id).getId();
+
+        owner1Id = userController.createUser(owner1).getId();
+        reqItem1.setRequestId(request1Id + 1);
+        assertThrows(RequestNotFoundException.class, () -> itemController.createItem(reqItem1, owner1Id));
+
+        assertThrows(RequestNotFoundException.class, () -> requestController.getRequestByRequestId(requester1Id, request1Id + 1));
+        assertRepositorySize(2, 0, 0, 1, 0);
     }
 
     @Nested
-    @Rollback(false)
     @TestMethodOrder(MethodOrderer.MethodName.class)
     class OrderedIntegrationTestWithoutRollback {
+
         @Test
+        @Sql(scripts = "file:./src/test/java/resources/clear-db.sql", executionPhase = BEFORE_TEST_METHOD)
         public void test_T1010_PS01_fillData() throws InterruptedException {
             assertRepositorySize(0, 0, 0, 0, 0);
 

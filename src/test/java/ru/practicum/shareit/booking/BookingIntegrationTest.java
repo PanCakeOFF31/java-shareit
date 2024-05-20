@@ -5,10 +5,10 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.booking.exception.BookingItemOwnerIncorrectException;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.comment.repository.CommentRepository;
@@ -176,12 +176,7 @@ public class BookingIntegrationTest {
         size = 10;
     }
 
-    @Test
-    public void test_T0010_PS01() {
-    }
-
     @Nested
-    @Rollback(false)
     @TestMethodOrder(MethodOrderer.MethodName.class)
     class OrderedIntegrationTestWithoutRollback {
         private void assertRepositorySize(long uQ, long iQ, long bQ, long rQ, long cQ) {
@@ -273,6 +268,8 @@ public class BookingIntegrationTest {
             assertEquals(booking2.getStart(), gotBooking2AfterToBook.getStart());
             assertEquals(booking2.getEnd(), gotBooking2AfterToBook.getEnd());
             assertEquals(Status.APPROVED, gotBooking2AfterToBook.getStatus());
+
+            assertThrows(BookingItemOwnerIncorrectException.class, () -> bookingController.toBook(requester1Id, booking2Id, true));
 
             BookingResponseDto gotBooking6AfterReject = bookingController.toBook(owner3Id, booking6Id, false);
             assertEquals(booking6Id, gotBooking6AfterReject.getId());

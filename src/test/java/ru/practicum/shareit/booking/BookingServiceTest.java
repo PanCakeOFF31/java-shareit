@@ -281,9 +281,9 @@ class BookingServiceTest {
         Mockito.doNothing().when(userService).userExists(anyOwnerId);
 
         Mockito.when(bookingRepository.findById(anyBookingId))
-                .thenThrow(BookingNotFoundException.class);
+                .thenThrow(BookingByIdAndOwnerIdNotFoundException.class);
 
-        assertThrows(BookingNotFoundException.class, () -> bookingService.toBook(anyOwnerId, anyBookingId, true));
+        assertThrows(BookingByIdAndOwnerIdNotFoundException.class, () -> bookingService.toBook(anyOwnerId, anyBookingId, true));
 
         Mockito.verify(userService, Mockito.only()).userExists(anyOwnerId);
         Mockito.verifyNoMoreInteractions(userService);
@@ -378,9 +378,9 @@ class BookingServiceTest {
     @Test
     public void test_T0030_NS02_getBooking_noBookerOrOwner() {
         Mockito.doNothing().when(userService).userExists(anyBookerId);
-        Mockito.doThrow(BookingNotFoundException.class).when(bookingRepository).findByIdAndBookerIdOrOwnerId(anyBookingId, anyBookerId);
+        Mockito.doThrow(BookingByIdAndOwnerIdNotFoundException.class).when(bookingRepository).findByIdAndBookerIdOrOwnerId(anyBookingId, anyBookerId);
 
-        assertThrows(BookingNotFoundException.class, () -> bookingService.getBookingDto(anyBookingId, anyBookerId));
+        assertThrows(BookingByIdAndOwnerIdNotFoundException.class, () -> bookingService.getBookingDto(anyBookingId, anyBookerId));
 
         Mockito.verify(userService, Mockito.only()).userExists(anyBookerId);
         Mockito.verify(bookingRepository, Mockito.only()).findByIdAndBookerIdOrOwnerId(anyBookingId, anyBookerId);

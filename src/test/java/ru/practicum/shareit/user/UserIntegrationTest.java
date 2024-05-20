@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.comment.repository.CommentRepository;
@@ -26,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
-@Rollback
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class UserIntegrationTest {
@@ -72,7 +70,6 @@ public class UserIntegrationTest {
     }
 
     @Nested
-    @Rollback(false)
     @TestMethodOrder(MethodOrderer.MethodName.class)
     class OrderedIntegrationTestWithoutRollback {
         private void assertRepositorySize(long uQ, long iQ, long bQ, long rQ, long cQ) {

@@ -8,8 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -29,8 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-@Rollback
-@Transactional(propagation = Propagation.REQUIRED)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class BookingRepositoryTest {
     @Autowired
@@ -163,7 +159,7 @@ class BookingRepositoryTest {
 
     @Nested
     @Rollback(value = false)
-    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    @TestMethodOrder(MethodOrderer.MethodName.class)
     class RepositoryWithFilledDataBaseWithoutRollback {
 
         public void fillRepositoryWithAssigningId() throws InterruptedException {
@@ -223,7 +219,6 @@ class BookingRepositoryTest {
         }
 
         @Test
-        @Order(1)
         @DisplayName("repository filling")
         public void test_T1000_PS01_fillingRepository() throws InterruptedException {
             fillRepositoryWithAssigningId();

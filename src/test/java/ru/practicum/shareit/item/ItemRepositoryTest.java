@@ -6,9 +6,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingOrderResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -29,8 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
-@Rollback
-@Transactional(propagation = Propagation.REQUIRED)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class ItemRepositoryTest {
     @Autowired
@@ -297,7 +292,6 @@ class ItemRepositoryTest {
     }
 
     @Nested
-    @Rollback
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class RepositoryWithWithFilledDataBaseWithRollBack {
 

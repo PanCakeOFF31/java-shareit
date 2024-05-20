@@ -45,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking getBookingById(long bookingId) {
         return findBookingById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException(String.format(NO_FOUND_BOOKING, bookingId)));
+                .orElseThrow(() -> new BookingByIdAndOwnerIdNotFoundException(String.format(NO_FOUND_BOOKING, bookingId)));
     }
 
     @Transactional
@@ -106,7 +106,7 @@ public class BookingServiceImpl implements BookingService {
     public Booking getBookingByIdAndOwnerIdOrBookerId(long bookingId, long bookerOrOwnerId) {
         log.debug("BookingServiceImpl - service.getBooking({}, {})", bookerOrOwnerId, bookingId);
         return findByIdAndBookerIdOrOwnerId(bookingId, bookerOrOwnerId)
-                .orElseThrow(() -> new BookingNotFoundException(String.format(NO_FOUND_BOOKING, bookingId)));
+                .orElseThrow(() -> new BookingByIdAndOwnerIdNotFoundException(String.format(NO_FOUND_BOOKING, bookingId)));
     }
 
     @Override
