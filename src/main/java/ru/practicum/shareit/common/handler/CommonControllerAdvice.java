@@ -53,7 +53,7 @@ public class CommonControllerAdvice {
 
     @ExceptionHandler(BookingByIdAndOwnerIdNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleBookingNotFoundException(final BookingByIdAndOwnerIdNotFoundException exception) {
+    public ErrorResponse handleBookingByIdAndOwnerIdNotFoundException(final BookingByIdAndOwnerIdNotFoundException exception) {
         log.debug(className + "- handleBookingNotFoundException");
         return new ErrorResponse("Ошибка существования бронирования",
                 "Бронь с указанным идентификатором отсутствует",
