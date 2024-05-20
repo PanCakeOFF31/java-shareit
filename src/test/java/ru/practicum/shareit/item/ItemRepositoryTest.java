@@ -299,7 +299,7 @@ class ItemRepositoryTest {
     @Nested
     @Rollback
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    class RepositoryWithWithFilledDataBase_withRollback {
+    class RepositoryWithWithFilledDataBaseWithRollBack {
 
         @BeforeEach
         public void fillRepositoryWithAssigningId() {
