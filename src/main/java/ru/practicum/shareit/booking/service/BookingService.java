@@ -9,8 +9,6 @@ import java.util.Optional;
 
 public interface BookingService {
 
-    Optional<Booking> findBookingById(final long bookingId);
-
     Booking getBookingById(final long bookingId);
 
     BookingResponseDto createBooking(final BookingRequestDto bookingDto, final long bookerId);

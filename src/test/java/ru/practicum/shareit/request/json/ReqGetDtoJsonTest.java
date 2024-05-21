@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.item.dto.ItemReqDto;
+import ru.practicum.shareit.item.dto.ItemReqGetDto;
 import ru.practicum.shareit.request.dto.ReqGetDto;
 
 import java.io.IOException;
@@ -28,8 +28,8 @@ class ReqGetDtoJsonTest {
 
         LocalDateTime ldt = LocalDateTime.of(2020, 10, 12, 15, 45, 30);
 
-        ItemReqDto item1 = new ItemReqDto(itemId1, "item-1", "item-1-description", true, requestId);
-        ItemReqDto item2 = new ItemReqDto(itemId2, "item-2", "item-2-description", true, requestId);
+        ItemReqGetDto item1 = new ItemReqGetDto(itemId1, "item-1", "item-1-description", true, requestId);
+        ItemReqGetDto item2 = new ItemReqGetDto(itemId2, "item-2", "item-2-description", true, requestId);
 
         ReqGetDto reqGetDto = new ReqGetDto(requestId, "some-description", ldt, List.of(item1, item2));
 

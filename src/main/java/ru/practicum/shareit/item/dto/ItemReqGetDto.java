@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class ItemReqDto {
+public class ItemReqGetDto {
     private long id;
     private String name;
     private String description;

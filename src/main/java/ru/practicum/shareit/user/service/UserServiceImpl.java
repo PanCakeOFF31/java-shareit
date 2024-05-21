@@ -26,7 +26,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private static final String NO_FOUND_USER = "Такого пользователя с id: %d не существует в хранилище";
 
-    @Override
     public Optional<User> findUserById(final long userId) {
         log.info("UserServiceImpl - service.findUserById({})", userId);
         return userRepository.findById(userId);
@@ -40,8 +39,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(message));
     }
 
-    @Override
-    public Optional<UserResponseDto> findUserResponseDtoById(final long userId) {
+    private Optional<UserResponseDto> findUserResponseDtoById(final long userId) {
         log.info("UserServiceImpl - service.findUserResponseDtoById({})", userId);
         return userRepository.findUserResponseDtoById(userId);
     }

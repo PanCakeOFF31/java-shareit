@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.common.CommonValidation;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemReqDto;
+import ru.practicum.shareit.item.dto.ItemReqGetDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.dto.ReqCreateDto;
 import ru.practicum.shareit.request.dto.ReqGetDto;
@@ -34,14 +34,12 @@ public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private static final String NO_FOUND_REQUEST = "Такого запроса с id: %d не существует в хранилище";
 
-    @Override
-    public Optional<Request> findRequestById(final long requestId) {
+    private Optional<Request> findRequestById(final long requestId) {
         log.debug("RequestServiceImpl - service.findRequestById({})", requestId);
         return requestRepository.findById(requestId);
     }
 
-    @Override
-    public Request getRequestDtoById(long requestId) {
+    private Request getRequestDtoById(long requestId) {
         log.debug("RequestServiceImpl - service.getRequestById({})", requestId);
         return findRequestById(requestId)
                 .orElseThrow(() -> new RequestNotFoundException(String.format(NO_FOUND_REQUEST, requestId)));
@@ -70,7 +68,7 @@ public class RequestServiceImpl implements RequestService {
         Request request = getRequestDtoById(requestId);
         ReqGetDto reqGetDto = RequestMapper.mapToReqGetDto(request);
 
-        List<ItemReqDto> itemReqs = ItemMapper.mapToItemReqDto(itemService.getItemsByRequestId(requestId));
+        List<ItemReqGetDto> itemReqs = ItemMapper.mapToItemReqDto(itemService.getItemsByRequestId(requestId));
 
         reqGetDto.setItems(itemReqs);
 

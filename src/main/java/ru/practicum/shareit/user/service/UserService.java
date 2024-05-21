@@ -6,14 +6,10 @@ import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
-    Optional<User> findUserById(final long userId);
 
     User getUserById(final long userId) throws UserNotFoundException;
-
-    Optional<UserResponseDto> findUserResponseDtoById(final long userId);
 
     UserResponseDto getUserResponseDtoById(final long userId) throws UserNotFoundException;
 

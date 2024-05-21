@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.item.dto.ItemReqDto;
+import ru.practicum.shareit.item.dto.ItemReqGetDto;
 
 import java.io.IOException;
 
@@ -14,21 +14,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class ItemReqDtoJsonTest {
-    private final JacksonTester<ItemReqDto> json;
+class ItemReqGetDtoJsonTest {
+    private final JacksonTester<ItemReqGetDto> json;
 
     @Test
     public void test_T0010_PS01_foolField() throws IOException {
         long itemId = 99L;
         long requestId = 17L;
-        ItemReqDto itemReqDto =
-                new ItemReqDto(itemId, "item-name", "some-description", false, requestId);
+        ItemReqGetDto itemReqGetDto =
+                new ItemReqGetDto(itemId, "item-name", "some-description", false, requestId);
 
-        JsonContent<ItemReqDto> result = json.write(itemReqDto);
+        JsonContent<ItemReqGetDto> result = json.write(itemReqGetDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id");
-        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo(itemReqDto.getName());
-        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo(itemReqDto.getDescription());
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo(itemReqGetDto.getName());
+        assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo(itemReqGetDto.getDescription());
         assertThat(result).extractingJsonPathBooleanValue("$.available").isFalse();
         assertThat(result).extractingJsonPathNumberValue("$.requestId");
 
@@ -38,9 +38,9 @@ class ItemReqDtoJsonTest {
 
     @Test
     public void test_T0010_NS01_emptyField() throws IOException {
-        ItemReqDto itemBooking = new ItemReqDto();
+        ItemReqGetDto itemBooking = new ItemReqGetDto();
 
-        JsonContent<ItemReqDto> result = json.write(itemBooking);
+        JsonContent<ItemReqGetDto> result = json.write(itemBooking);
 
         assertThat(result).extractingJsonPathNumberValue("$.id");
         assertThat(result).extractingJsonPathStringValue("$.name").isNullOrEmpty();

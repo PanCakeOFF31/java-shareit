@@ -49,8 +49,7 @@ public class ItemServiceImpl implements ItemService {
     private static final String NO_FOUND_ITEM = "Такого предмета с id: %d не существует в хранилище";
     private static final String INCORRECT_OWNER = "Пользователь с id: %d не является владельцем предмета с id: %d ";
 
-    @Override
-    public Optional<Item> findItemById(final long itemId) {
+    private Optional<Item> findItemById(final long itemId) {
         log.debug("ItemServiceImpl - service.findItemById({})", itemId);
         return itemRepository.findById(itemId);
     }
@@ -62,8 +61,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ItemNotFoundException(String.format(NO_FOUND_ITEM, itemId)));
     }
 
-    @Override
-    public Optional<Item> findItemByIdAndOwnerId(final long itemId, final long ownerId) {
+    private Optional<Item> findItemByIdAndOwnerId(final long itemId, final long ownerId) {
         log.debug("ItemServiceImpl - service.findItemByIdAndOwnerId({}, {})", ownerId, itemId);
         return itemRepository.findItemByIdAndOwnerId(itemId, ownerId);
     }

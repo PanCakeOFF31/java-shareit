@@ -37,8 +37,7 @@ public class BookingServiceImpl implements BookingService {
     private static final String NO_FOUND_BOOKING = "Такого брони с id: %d не существует в хранилище";
     private static final String UNSUPPORTED_STATUS = "Данный статус '%s' не поддерживается";
 
-    @Override
-    public Optional<Booking> findBookingById(long bookingId) {
+    private Optional<Booking> findBookingById(long bookingId) {
         return bookingRepository.findById(bookingId);
     }
 

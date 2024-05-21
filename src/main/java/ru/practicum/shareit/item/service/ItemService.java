@@ -7,14 +7,10 @@ import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ItemService {
-    Optional<Item> findItemById(final long itemId);
 
     Item getItemById(final long itemId);
-
-    Optional<Item> findItemByIdAndOwnerId(final long itemId, final long ownerId);
 
     Item getItemByIdAndOwnerId(final long itemId, final long ownerId);
 

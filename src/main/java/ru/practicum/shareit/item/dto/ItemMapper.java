@@ -41,8 +41,8 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemReqDto mapToItemReqDto(final Item item) {
-        return ItemReqDto.builder()
+    public static ItemReqGetDto mapToItemReqDto(final Item item) {
+        return ItemReqGetDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
@@ -51,8 +51,8 @@ public class ItemMapper {
                 .build();
     }
 
-    public static List<ItemReqDto> mapToItemReqDto(final Iterable<Item> items) {
-        List<ItemReqDto> dtos = new ArrayList<>();
+    public static List<ItemReqGetDto> mapToItemReqDto(final Iterable<Item> items) {
+        List<ItemReqGetDto> dtos = new ArrayList<>();
 
         for (Item item : items) {
             dtos.add(mapToItemReqDto(item));
