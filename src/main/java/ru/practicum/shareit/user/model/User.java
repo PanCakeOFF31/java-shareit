@@ -8,7 +8,7 @@ import javax.validation.constraints.Email;
 @Entity
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,10 +24,4 @@ public class User {
     @Email
     @Column(length = 256, nullable = false, unique = true)
     private String email;
-
-    public User(final User otherUser) {
-        this.id = otherUser.id;
-        this.name = otherUser.name;
-        this.email = otherUser.email;
-    }
 }

@@ -49,14 +49,4 @@ public class BookingMapper {
                 .status(Status.WAITING)
                 .build();
     }
-
-    public static Booking mapToBooking(final BookingRequestDto bookingDto) {
-        return Booking.builder()
-                .start(bookingDto.getStart())
-                .end(bookingDto.getEnd())
-                .item(Item.builder()
-                        .id(bookingDto.getItemId()).build())
-                .status(Status.WAITING)
-                .build();
-    }
 }

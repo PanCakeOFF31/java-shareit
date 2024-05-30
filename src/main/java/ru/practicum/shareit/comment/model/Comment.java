@@ -23,23 +23,16 @@ public class Comment {
     @Column(length = 1024, nullable = false)
     private String text;
 
-    @ToString.Exclude
-    @JoinColumn(name = "item_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Item item;
-
-    @ToString.Exclude
-    @JoinColumn(name = "author_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User author;
-
     @Column(nullable = false)
     private LocalDateTime created;
 
-    public Comment(Comment otherComment) {
-        this.id = otherComment.id;
-        this.text = otherComment.text;
-        this.item = otherComment.item;
-        this.author = otherComment.author;
-    }
+    @ToString.Exclude
+    @JoinColumn(name = "item_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Item.class)
+    private Item item;
+
+    @ToString.Exclude
+    @JoinColumn(name = "author_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
+    private User author;
 }

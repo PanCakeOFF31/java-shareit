@@ -5,7 +5,4 @@ public class UserNotBookedItemException extends RuntimeException {
         super();
     }
 
-    public UserNotBookedItemException(String message) {
-        super(message);
-    }
 }

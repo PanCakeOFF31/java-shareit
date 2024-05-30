@@ -8,15 +8,20 @@ import java.util.List;
 
 public class ItemMapper {
     public static ItemResponseDto mapToItemResponseDto(final Item item) {
-        return ItemResponseDto.builder()
+        var building = ItemResponseDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .nextBooking(null)
                 .lastBooking(null)
-                .comments(CommentMapper.mapToCommentResponseDto(item.getComments()))
-                .build();
+                .requestId(null)
+                .comments(CommentMapper.mapToCommentResponseDto(item.getComments()));
+
+        if (item.getRequest() == null)
+            return building.build();
+
+        return building.requestId(item.getRequest().getId()).build();
     }
 
     public static List<ItemResponseDto> mapToItemResponseDto(final Iterable<Item> items) {
@@ -34,6 +39,26 @@ public class ItemMapper {
                 .id(item.getId())
                 .name(item.getName())
                 .build();
+    }
+
+    public static ItemReqGetDto mapToItemReqDto(final Item item) {
+        return ItemReqGetDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .requestId(item.getRequest().getId())
+                .build();
+    }
+
+    public static List<ItemReqGetDto> mapToItemReqDto(final Iterable<Item> items) {
+        List<ItemReqGetDto> dtos = new ArrayList<>();
+
+        for (Item item : items) {
+            dtos.add(mapToItemReqDto(item));
+        }
+
+        return dtos;
     }
 
     public static Item mapToItem(final ItemRequestDto itemDto) {

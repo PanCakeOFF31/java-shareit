@@ -1,0 +1,32 @@
+    @Override
+    public Collection<BookingResponseDto> getAll() {
+        return BookingMapper.mapToBookingResponseDto(bookingRepository.findAll());
+    }
+
+    @Override
+    public Optional<Booking> findBookingByIdFetch(long bookingId) {
+        return bookingRepository.findById(bookingId);
+    }
+
+    @Override
+    public Booking getBookingByIdFetch(long bookingId) {
+        return findBookingByIdFetch(bookingId)
+                .orElseThrow(() -> new BookingNotFoundException(String.format(NO_FOUND_BOOKING, bookingId)));
+    }
+
+    @Override
+    public boolean containsBookingById(final long bookingId) {
+        log.debug("BookingServiceImpl - service.containsItemById()");
+        return bookingRepository.existsById(bookingId);
+    }
+
+    @Override
+    public void bookingExists(final long bookingId) {
+        log.debug("BookingServiceImpl - service.bookingExists()");
+
+        if (!containsBookingById(bookingId)) {
+            String message = String.format(NO_FOUND_BOOKING, bookingId);
+            log.warn(message);
+            throw new ItemNotFoundException(message);
+        }
+    }

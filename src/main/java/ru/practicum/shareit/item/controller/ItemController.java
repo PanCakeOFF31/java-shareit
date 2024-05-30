@@ -11,7 +11,6 @@ import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -38,46 +37,34 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemResponseDto getItem(@PathVariable final long itemId,
-                                   @RequestHeader("X-Sharer-User-Id") final Long ownerId) {
+    public ItemResponseDto getItem(@RequestHeader("X-Sharer-User-Id") final Long ownerId,
+                                   @PathVariable final long itemId) {
         log.debug("/items/{} - GET: getItem({}, {})", itemId, itemId, ownerId);
         return itemService.getItemDtoById(itemId, ownerId);
     }
 
     @GetMapping
-    public List<ItemResponseDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") final Long ownerId) {
+    public List<ItemResponseDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") final Long ownerId,
+                                                 @RequestParam(defaultValue = "0") final int from,
+                                                 @RequestParam(defaultValue = "10") final int size) {
         log.debug("/items - GET: getItemsByUser({})", ownerId);
-        return itemService.getItemsByOwner(ownerId);
+        return itemService.getItemsByOwner(ownerId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemResponseDto> searchItems(@RequestHeader("X-Sharer-User-Id") final Long userId,
-                                             @RequestParam final String text) {
+                                             @RequestParam final String text,
+                                             @RequestParam(defaultValue = "0") final int from,
+                                             @RequestParam(defaultValue = "10") final int size) {
         log.debug("/items/search?text={} - GET: searchItems({}, {})", text, userId, text);
-        return itemService.searchItems(userId, text);
+        return itemService.searchItems(userId, text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
-//    @ResponseStatus(HttpStatus.CREATED)
     public CommentResponseDto createComment(@Valid @RequestBody final CommentRequestDto commentDto,
-                                            @RequestHeader("X-Sharer-User-Id") final Long ownerId,
+                                            @RequestHeader("X-Sharer-User-Id") final Long authorId,
                                             @PathVariable final long itemId) {
-        log.debug("/items/{}/commentDto - POST: createComment({}, {}, {})", itemId, commentDto, ownerId, itemId);
-        return itemService.createComment(commentDto, ownerId, itemId);
-    }
-
-
-    //    TODO: служебный ENDPOINT
-    @GetMapping("/all/item")
-    public Collection<ItemResponseDto> getAllItems() {
-        log.debug("/items/all - GET: getAllItems()");
-        return itemService.getAllItems();
-    }
-
-    //    TODO: служебный ENDPOINT
-    @GetMapping("/all/comment")
-    public Collection<CommentResponseDto> getAllComments() {
-        log.debug("/items/all - GET: getAllComments()");
-        return itemService.getAllComments();
+        log.debug("/items/{}/commentDto - POST: createComment({}, {}, {})", itemId, commentDto, authorId, itemId);
+        return itemService.createComment(commentDto, authorId, itemId);
     }
 }

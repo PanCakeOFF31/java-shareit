@@ -1,15 +1,16 @@
 package ru.practicum.shareit.comment.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@Builder
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class CommentResponseDto {
     private long id;
     private String text;

@@ -10,13 +10,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.booking.exception.*;
 import ru.practicum.shareit.common.error.ErrorResponse;
-import ru.practicum.shareit.common.exception.MethodNotImplemented;
-import ru.practicum.shareit.item.exception.ItemFieldValidationException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemOwnerIncorrectException;
+import ru.practicum.shareit.request.exception.RequestNotFoundException;
 import ru.practicum.shareit.user.exception.EmailFieldValidationException;
 import ru.practicum.shareit.user.exception.SameUserEmailException;
-import ru.practicum.shareit.user.exception.UserFieldValidationException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 @RestControllerAdvice(basePackages = "ru.practicum.shareit")
@@ -24,26 +22,15 @@ import ru.practicum.shareit.user.exception.UserNotFoundException;
 public class CommonControllerAdvice {
     private final String className = this.getClass().getName();
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleRunTimeException(final RuntimeException exception) {
-        log.debug(className + "- - handleRunTimeException()");
-        log.warn(exception.getClass().toString());
-
-        return new ErrorResponse("RuntimeException",
-                "Не предвиденная ошибка, которую не предвидели.",
-                exception.getClass().toString());
-    }
-
-    @ExceptionHandler(MethodNotImplemented.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodNotImplemented(final MethodNotImplemented exception) {
-        log.debug(className + "- handleMethodNotImplemented");
-
-        return new ErrorResponse("Ошибка выполнения запроса",
-                "Проблемы реализацией endpoint, ", exception.getMessage());
-    }
-
+//    Все реализовано на данный момент
+//    @ExceptionHandler(MethodNotImplemented.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse handleMethodNotImplemented(final MethodNotImplemented exception) {
+//        log.debug(className + "- handleMethodNotImplemented");
+//
+//        return new ErrorResponse("Ошибка выполнения запроса",
+//                "Проблемы реализацией endpoint, ", exception.getMessage());
+//    }
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -64,12 +51,21 @@ public class CommonControllerAdvice {
                 exception.getMessage());
     }
 
-    @ExceptionHandler(BookingNotFoundException.class)
+    @ExceptionHandler(BookingByIdAndOwnerIdNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleBookingNotFoundException(final BookingNotFoundException exception) {
+    public ErrorResponse handleBookingByIdAndOwnerIdNotFoundException(final BookingByIdAndOwnerIdNotFoundException exception) {
         log.debug(className + "- handleBookingNotFoundException");
         return new ErrorResponse("Ошибка существования бронирования",
                 "Бронь с указанным идентификатором отсутствует",
+                exception.getMessage());
+    }
+
+    @ExceptionHandler(RequestNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleRequestNotFoundException(final RequestNotFoundException exception) {
+        log.debug(className + "- handleRequestNotFoundException");
+        return new ErrorResponse("Ошибка существования запроса",
+                "Запрос с указанным идентификатором отсутствует",
                 exception.getMessage());
     }
 
@@ -103,15 +99,25 @@ public class CommonControllerAdvice {
                 exception.getMessage());
     }
 
-    @ExceptionHandler(UserFieldValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUserFieldValidationException(final UserFieldValidationException exception) {
-        log.debug(className + "- handleUserFieldValidationException");
-
-        return new ErrorResponse("Ошибка валидация полей пользователя",
-                "В JSON объекте отсутствуют необходимые поля",
-                exception.getMessage());
-    }
+//    @ExceptionHandler(UserFieldValidationException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse handleUserFieldValidationException(final UserFieldValidationException exception) {
+//        log.debug(className + "- handleUserFieldValidationException");
+//
+//        return new ErrorResponse("Ошибка валидация полей пользователя",
+//                "В JSON объекте отсутствуют необходимые поля",
+//                exception.getMessage());
+//    }
+//
+//    @ExceptionHandler(RequestFieldValidationException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse handleRequestFieldValidationException(final RequestFieldValidationException exception) {
+//        log.debug(className + "- handleRequestFieldValidationException");
+//
+//        return new ErrorResponse("Ошибка валидация полей запроса",
+//                "В JSON объекте отсутствуют необходимые поля",
+//                exception.getMessage());
+//    }
 
     @ExceptionHandler(EmailFieldValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -123,15 +129,15 @@ public class CommonControllerAdvice {
                 exception.getMessage());
     }
 
-    @ExceptionHandler(ItemFieldValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleItemFieldValidationException(final ItemFieldValidationException exception) {
-        log.debug(className + "- handleItemFieldValidationException");
-
-        return new ErrorResponse("Ошибка валидация полей предмета",
-                "В JSON объекте отсутствуют необходимые поля",
-                exception.getMessage());
-    }
+//    @ExceptionHandler(ItemFieldValidationException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse handleItemFieldValidationException(final ItemFieldValidationException exception) {
+//        log.debug(className + "- handleItemFieldValidationException");
+//
+//        return new ErrorResponse("Ошибка валидация полей предмета",
+//                "В JSON объекте отсутствуют необходимые поля",
+//                exception.getMessage());
+//    }
 
     @ExceptionHandler(InvalidDataAccessResourceUsageException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -203,4 +209,13 @@ public class CommonControllerAdvice {
                 exception.getMessage());
     }
 
+    @ExceptionHandler(BookingFieldValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBookingFieldValidationException(final BookingFieldValidationException exception) {
+        log.debug(className + "- handleBookingFieldValidationException");
+
+        return new ErrorResponse("Ошибка валидация полей предмета",
+                "В JSON объекте отсутствуют необходимые поля",
+                exception.getMessage());
+    }
 }
