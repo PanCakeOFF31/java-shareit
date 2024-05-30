@@ -62,6 +62,8 @@ class UserRepositoryTest {
     class RepositoryWithWithFilledDataBase {
 
         private List<User> fillRepository() {
+            assertEquals(0, userRepository.count());
+
             user1 = userRepository.save(user1);
             user2 = userRepository.save(user2);
             user3 = userRepository.save(user3);
