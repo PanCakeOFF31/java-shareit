@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private static final String NO_FOUND_USER = "Такого пользователя с id: %d не существует в хранилище";
 
-    public Optional<User> findUserById(final long userId) {
+    private Optional<User> findUserById(final long userId) {
         log.info("UserServiceImpl - service.findUserById({})", userId);
         return userRepository.findById(userId);
     }
