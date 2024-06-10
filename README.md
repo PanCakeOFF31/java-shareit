@@ -1,2 +1,5 @@
 # java-shareit
-Template repository for Shareit project.
+## Docker-compose
+* shareit-gateway
+* shareit-server
+* shareit-db
